@@ -9,6 +9,7 @@ public abstract class AbstractOpBasic implements Op {
    private final Label label;
    private final Variable variable;
 
+
    //Ctors
     protected AbstractOpBasic(OpData opData,Variable variable) { //allow to create without label
        this(opData, FixedLabel.EMPTY,variable);

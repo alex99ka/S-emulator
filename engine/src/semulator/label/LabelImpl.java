@@ -1,9 +1,9 @@
 package semulator.label;
 
-public class LabeImpl implements Label {
-    private String label;
+public class LabelImpl implements Label {
+    private final String label;
 
-    public LabeImpl(int number) {
+    public LabelImpl(int number) {
         this.label = "L" + number;
     }
 
