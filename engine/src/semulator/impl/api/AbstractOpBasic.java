@@ -1,9 +1,9 @@
 package semulator.impl.api;
 import semulator.variable.Variable;
-import semulator.interfaces.BasicInstruction;
+import semulator.interfaces.Op;
 import semulator.label.*;
 
-public abstract class AbstractOpBasic implements BasicInstruction {
+public abstract class AbstractOpBasic implements Op {
 
    private final OpData opData;
    private final Label label;
