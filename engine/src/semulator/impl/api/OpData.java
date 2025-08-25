@@ -1,4 +1,5 @@
 package semulator.impl.api;
+import semulator.label.Label;
 
 public enum OpData {
     INCREASE("INCREASE" , 1),

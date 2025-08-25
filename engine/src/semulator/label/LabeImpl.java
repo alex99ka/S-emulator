@@ -1,6 +1,5 @@
 package semulator.label;
-import semulator.interfaces.basicInsturction;
-import semulator.label.Label;
+
 public class LabeImpl implements Label {
     private String label;
 

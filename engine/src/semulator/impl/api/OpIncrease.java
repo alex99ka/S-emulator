@@ -1,7 +1,9 @@
 package semulator.impl.api;
 
-public class OpIncrease extends OpBasic {
-    public OpIncrease() {
-        super(OpData.INCREASE);
+import semulator.variable.Variable;
+
+public class OpIncrease extends AbstractOpBasic {
+    public OpIncrease(Variable variable) {
+        super(OpData.INCREASE,variable);
     }
 }

@@ -1,7 +1,9 @@
 package semulator.impl.api;
 
-public class OpNeutral extends OpBasic {
-    public OpNeutral() {
-        super(OpData.NEUTRAL);
+import semulator.variable.Variable;
+
+public class OpNeutral extends AbstractOpBasic {
+    public OpNeutral(Variable variable) {
+        super(OpData.NEUTRAL,variable);
     }
 }

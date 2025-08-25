@@ -1,8 +1,10 @@
 package semulator.impl.api;
 
 
-public class OpJumpNotZero extends OpBasic {
-    public OpJumpNotZero() {
-        super(OpData.JUMP_NOT_ZERO);
+import semulator.variable.Variable;
+
+public class OpJumpNotZero extends AbstractOpBasic {
+    public OpJumpNotZero(Variable variable) {
+        super(OpData.JUMP_NOT_ZERO,variable);
     }
 }
