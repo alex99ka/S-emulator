@@ -1,18 +1,18 @@
 package semulator.impl.api;
 import semulator.interfaces.basicInsturction;
+import semulator.impl.api.OpData;
 
-public abstract class BasicOp implements basicInsturction {
-   protected final String name;
-   protected final int cycles;
+public abstract class OpBasic implements basicInsturction {
 
-    protected BasicOp(String name, int cycles) {
-        this.name = name;
-        this.cycles = cycles;
+   private final OpData opData;
+
+    protected OpBasic(OpData opData) {
+        this.opData = opData;
     }
 
     @Override
     public String getName() {
-        return name;
+        return opData.getName();
     }
 
     @Override
@@ -21,7 +21,7 @@ public abstract class BasicOp implements basicInsturction {
 
     @Override
     public int getcycles() {
-        return 0;
+        return opData.getCycles();
     }
 
     @Override
