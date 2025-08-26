@@ -1,6 +1,6 @@
 package semulator.program;
 
-import semulator.interfaces.Op;
+import semulator.impl.api.Op;
 
 import java.util.ArrayList;
 import java.util.List;

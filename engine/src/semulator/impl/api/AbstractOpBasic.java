@@ -1,6 +1,7 @@
 package semulator.impl.api;
+import com.sun.jdi.Value;
+import semulator.execution.ExecutionContext;
 import semulator.variable.Variable;
-import semulator.interfaces.Op;
 import semulator.label.*;
 
 public abstract class AbstractOpBasic implements Op {
@@ -20,6 +21,11 @@ public abstract class AbstractOpBasic implements Op {
         return variable;
     }
 
+    @Override
+    public String getType() {
+        return variable.getRepresntation();
+    }
+
     protected AbstractOpBasic(OpData opData, Label label, Variable variable ) {
         this.opData = opData;
         this.label = label;
@@ -35,10 +41,6 @@ public abstract class AbstractOpBasic implements Op {
     @Override
     public String getName() {
         return opData.getName();
-    }
-
-    @Override
-    public void execute() {
     }
 
     @Override
