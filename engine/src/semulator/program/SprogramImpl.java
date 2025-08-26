@@ -1,5 +1,6 @@
 package semulator.program;
 
+import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.Op;
 
 import java.util.ArrayList;

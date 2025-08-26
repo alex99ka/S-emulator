@@ -1,8 +1,11 @@
 package semulator.execution;
 import semulator.variable.Variable;
 
+import java.util.List;
+
 public interface ExecutionContext {
 
-    long getVariableValue(Variable v);
-    void updateVariable(Variable v, long value);
+    Long getVariableValue();
+    public List getSnapshots();
+
 }

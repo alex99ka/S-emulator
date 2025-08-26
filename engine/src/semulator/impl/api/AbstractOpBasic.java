@@ -9,6 +9,7 @@ public abstract class AbstractOpBasic implements Op {
    private final OpData opData;
    private final Label label;
    private final Variable variable;
+   
 
 
    //Ctors

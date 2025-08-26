@@ -1,5 +1,6 @@
 package semulator.execution;
 
+import semulator.program.SprogramImpl;
 import semulator.variable.Variable;
 import semulator.variable.VariableImpl;
 import semulator.variable.VariableType;
@@ -9,13 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExecutionContextImpl {
+public class ExecutionContextImpl implements ExecutionContext {
 
-    private final ArrayList<Map<Variable, Long>> snapshots;
-    private Map<Variable, Long> CurrSnap;
-    public ExecutionContextImpl(Long... input) {
-        snapshots = new ArrayList<>();
-        CreateSnap(input);
+
+    private ArrayList<Map<Variable, Long>> snapshots = null; // to turn off the comment
+    public Map<Variable, Long> CurrSnap;
+
+
+    public ExecutionContextImpl(SprogramImpl program, Long... input) {
+        snapshots = new ArrayList<>(); // move to another function that will handle inputs from the user
+        CreateSnap(input);// probably I can get the work var from the program but not sure...
     }
 
     public List getSnapshots() {
@@ -32,17 +36,9 @@ public class ExecutionContextImpl {
        snapshots.add(first);
        CurrSnap = snap;
     }
+    public Long getVariableValue() {return CurrSnap.get(Variable.RESULT);}
+
+    public void AddSnap(Map<Variable, Long> m) {snapshots.add(m);}
 
 
-    public void AddSnap(long variableValue,Variable... workVariables)
-    {
-        if (workVariables != null) {
-        for (Variable v : workVariables) {
-            CurrSnap.put(v, variableValue);
-    }
-        }
-        CurrSnap.put(Variable.RESULT, variableValue); // update y
-        var frozen = (Map.copyOf(CurrSnap));
-        snapshots.add(frozen);
-    }
 }

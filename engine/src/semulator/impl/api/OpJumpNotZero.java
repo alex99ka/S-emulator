@@ -1,6 +1,7 @@
 package semulator.impl.api;
 
 
+import semulator.execution.ExecutionContextImpl;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;
@@ -19,9 +20,8 @@ public class OpJumpNotZero extends AbstractOpBasic {
 
 
     @Override
-    public Label execute(ArrayList<Map<Variable, Long>> snapshots) {
-        long variableValue = snapshots.getVariableValue(getVariable());
-
+    public Label execute(ExecutionContextImpl executable) {
+        long variableValue = executable.getVariableValue();
         if (variableValue != 0) {
             return jnzLabel;
         }
