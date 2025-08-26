@@ -22,6 +22,7 @@ public class ExecutionContextImpl implements ExecutionContext {
         CreateSnap(input);// probably I can get the work var from the program but not sure...
     }
 
+
     public List getSnapshots() {
         return snapshots;
     }
@@ -36,9 +37,19 @@ public class ExecutionContextImpl implements ExecutionContext {
        snapshots.add(first);
        CurrSnap = snap;
     }
-    public Long getVariableValue() {return CurrSnap.get(Variable.RESULT);}
+    public Long getVariableValue(Variable v) {return CurrSnap.get(v);}
 
-    public void AddSnap(Map<Variable, Long> m) {snapshots.add(m);}
+    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {
+        if (vars.size() != vals.size()) {
+            throw new IllegalArgumentException("vars and vals must have the same length");
+        }
+
+       for (int i  = 0; i < vals.size(); i++) {
+           CurrSnap.put(vars.get(i),vals.get(i)); // the current snapshot
+        }
+        var first = Map.copyOf(CurrSnap);  // making an immutable copy
+        snapshots.add(first);
+    }
 
 
 }

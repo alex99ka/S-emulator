@@ -6,6 +6,7 @@ import semulator.label.Label;
 import semulator.program.SprogramImpl;
 import semulator.variable.Variable;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ProgramExecuterImpl implements ProgramExecuter {
@@ -14,8 +15,8 @@ public class ProgramExecuterImpl implements ProgramExecuter {
     public ProgramExecuterImpl(SprogramImpl program) {
         this.program = program;
     }
-
-    public long run(Long... input) {
+     // the program loop
+    public Long run(Long... input) {
         this.context = new ExecutionContextImpl(program, input);
         Op currentInstruction = program.getOps().getFirst();
         Label nextLabel;
@@ -29,19 +30,9 @@ public class ProgramExecuterImpl implements ProgramExecuter {
             }
         } while (nextLabel != FixedLabel.EXIT);
 
-        return context.getVariableValue();
+        return context.getVariableValue(Variable.RESULT);
     }
-    public void AddSnap(Long variableValue,Variable... workVariables)
-    {
-        if (workVariables != null) {
-            for (Variable v : workVariables) {
-               context.CurrSnap.put(v, variableValue);
-            }
-        }
-        context.CurrSnap.put(semulator.variable.Variable.RESULT, variableValue); // update y
-        var frozen = (Map.copyOf(context.CurrSnap));
-        context.AddSnap(frozen);
-    }
+    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {context.AddSnap(vars, vals);}
 
 
     @Override

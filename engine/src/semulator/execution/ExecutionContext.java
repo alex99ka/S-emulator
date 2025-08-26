@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ExecutionContext {
 
-    Long getVariableValue();
+    Long getVariableValue(Variable v);
     public List getSnapshots();
 
 }

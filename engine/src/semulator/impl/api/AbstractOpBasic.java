@@ -9,13 +9,18 @@ public abstract class AbstractOpBasic implements Op {
    private final OpData opData;
    private final Label label;
    private final Variable variable;
-   
+
 
 
    //Ctors
     protected AbstractOpBasic(OpData opData,Variable variable) { //allow to create without label
        this(opData, FixedLabel.EMPTY,variable);
    }
+    public AbstractOpBasic(OpData opData, Variable variable, Label label) {
+        this.opData = opData;
+        this.label = label;
+        this.variable = variable;
+    }
 
     @Override
     public Variable getVariable() {

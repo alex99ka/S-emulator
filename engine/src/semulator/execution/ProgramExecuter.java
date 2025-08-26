@@ -4,6 +4,6 @@ import semulator.variable.Variable;
 import java.util.Map;
 
 public interface ProgramExecuter {
-    long run(long... input);
+    Long run(Long... input);
     Map<Variable, Long> variableState();
 }

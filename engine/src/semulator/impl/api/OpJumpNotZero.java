@@ -21,7 +21,7 @@ public class OpJumpNotZero extends AbstractOpBasic {
 
     @Override
     public Label execute(ExecutionContextImpl executable) {
-        long variableValue = executable.getVariableValue();
+        long variableValue = executable.getVariableValue(getVariable());
         if (variableValue != 0) {
             return jnzLabel;
         }
