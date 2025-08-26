@@ -1,6 +1,5 @@
 package semulator.impl.api;
 
-import semulator.execution.ExecutionContext;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;
@@ -11,7 +10,7 @@ public class OpNeutral extends AbstractOpBasic {
     }
 
     @Override
-    public Label execute(ExecutionContext context) {
+    public Label execute(ArrayList<Map<Variable, Long>> snapshots) {
         return FixedLabel.EMPTY;
     }
 }

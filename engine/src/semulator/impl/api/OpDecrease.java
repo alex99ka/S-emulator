@@ -1,16 +1,18 @@
 package semulator.impl.api;
 
-import semulator.execution.ExecutionContext;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class OpDecrease extends AbstractOpBasic {
     @Override
-    public Label execute(ExecutionContext context) {
-        long variableValue = context.getVariableValue(getVariable());
+    public Label execute(ArrayList<Map<Variable, Long>> snapshots) {
+        long variableValue = snapshots.getVariableValue(getVariable());
         variableValue = Math.max(0, variableValue - 1);
-        context.updateVariable(getVariable(), variableValue);
+        snapshots.updateVariable(getVariable(), variableValue);
 
         return FixedLabel.EMPTY;
     }
