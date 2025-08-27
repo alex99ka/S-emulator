@@ -7,25 +7,25 @@ import semulator.variable.Variable;
 
 import java.util.ArrayList;
 
-public class OpIncrease extends AbstractOpBasic {
-    public OpIncrease(Variable variable) {
-        super(OpData.INCREASE,variable);
+public class OpAssignment extends AbstractOpBasic {
+    Variable outSideVar;
+    public OpAssignment( Variable variable, Variable outSideVar) {
+        super(OpData.ASSIGNMENT, variable);
+        this.outSideVar = outSideVar;
     }
 
-    public OpIncrease(Variable variable, Label label) {
-        super(OpData.INCREASE, variable, label);
+    public OpAssignment(Variable variable, Label label,  Variable outSideVar) {
+        super(OpData.ASSIGNMENT, variable, label);
+        this.outSideVar = outSideVar;
     }
 
     @Override
     public Label execute(ExecutionContextImpl executable) {
-
-        long variableValue = executable.getVariableValue(getVariable());
-        variableValue++;
+        Long variableValue = executable.getVariableValue(outSideVar);
         ArrayList<Variable> vars = new ArrayList<>();
         ArrayList<Long> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(variableValue);
-
         executable.AddSnap(vars,vals);
 
         return FixedLabel.EMPTY;

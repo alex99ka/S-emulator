@@ -12,7 +12,7 @@ public class OpJumpNotZero extends AbstractOpBasic {
     }
 
     public OpJumpNotZero(Variable variable, Label jnzLabel, Label label) {
-        super(OpData.JUMP_NOT_ZERO, label,variable );
+        super(OpData.JUMP_NOT_ZERO,variable, label );
         this.jnzLabel = jnzLabel;
     }
 

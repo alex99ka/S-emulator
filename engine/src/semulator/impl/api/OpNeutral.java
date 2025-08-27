@@ -10,6 +10,10 @@ public class OpNeutral extends AbstractOpBasic {
         super(OpData.NEUTRAL,variable);
     }
 
+    public OpNeutral(Variable variable, Label label) {
+        super(OpData.NEUTRAL, variable, label);
+    }
+
     @Override
     public Label execute(ExecutionContextImpl executable) {
         return FixedLabel.EMPTY;

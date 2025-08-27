@@ -4,9 +4,7 @@ import semulator.execution.ExecutionContextImpl;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class OpDecrease extends AbstractOpBasic {
     @Override
@@ -25,6 +23,9 @@ public class OpDecrease extends AbstractOpBasic {
 
     public OpDecrease(Variable variable) {
         super(OpData.DECREASE, variable);
+    }
 
+    public OpDecrease(Variable variable, Label label) {
+        super(OpData.DECREASE, variable, label);
     }
 }

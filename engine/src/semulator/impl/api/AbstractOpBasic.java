@@ -14,7 +14,7 @@ public abstract class AbstractOpBasic implements Op {
 
    //Ctors
     protected AbstractOpBasic(OpData opData,Variable variable) { //allow to create without label
-       this(opData, FixedLabel.EMPTY,variable);
+       this(opData, variable,FixedLabel.EMPTY);
    }
     public AbstractOpBasic(OpData opData, Variable variable, Label label) {
         this.opData = opData;
@@ -30,12 +30,6 @@ public abstract class AbstractOpBasic implements Op {
     @Override
     public String getType() {
         return variable.getRepresntation();
-    }
-
-    protected AbstractOpBasic(OpData opData, Label label, Variable variable ) {
-        this.opData = opData;
-        this.label = label;
-        this.variable = variable;
     }
 
     @Override
