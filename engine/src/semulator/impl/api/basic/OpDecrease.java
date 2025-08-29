@@ -1,6 +1,8 @@
-package semulator.impl.api;
+package semulator.impl.api.basic;
 
 import semulator.execution.ExecutionContextImpl;
+import semulator.impl.api.skeleton.AbstractOpBasic;
+import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;

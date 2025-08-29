@@ -1,13 +1,15 @@
-package semulator.impl.api;
+package semulator.impl.api.synthetic;
 
 import semulator.execution.ExecutionContextImpl;
+import semulator.impl.api.skeleton.AbstractOpBasic;
+import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;
 
 import java.util.ArrayList;
 
-public class OpConstantAssigment extends AbstractOpBasic{
+public class OpConstantAssigment extends AbstractOpBasic {
     Long constant;
     public OpConstantAssigment( Variable variable, Long constant) {
         super(OpData.CONSTANT_ASSIGNMENT, variable);

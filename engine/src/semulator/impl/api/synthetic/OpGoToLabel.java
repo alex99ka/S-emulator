@@ -1,10 +1,12 @@
-package semulator.impl.api;
+package semulator.impl.api.synthetic;
 
 import semulator.execution.ExecutionContextImpl;
+import semulator.impl.api.skeleton.AbstractOpBasic;
+import semulator.impl.api.skeleton.OpData;
 import semulator.label.Label;
 import semulator.variable.Variable;
 
-public class OpGoToLabel extends AbstractOpBasic{
+public class OpGoToLabel extends AbstractOpBasic {
     Label nextLabel;
     public OpGoToLabel(Variable variable, Label nextLabel) {
         super(OpData.GOTO_LABEL,variable);

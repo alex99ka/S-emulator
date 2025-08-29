@@ -10,5 +10,18 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/src/semulator/input/jaxb" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/src/semulator/input/jaxb" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/src/semulator/input/jaxb" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/src/semulator/input/jaxb" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>

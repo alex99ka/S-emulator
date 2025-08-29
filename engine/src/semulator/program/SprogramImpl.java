@@ -1,19 +1,45 @@
 package semulator.program;
 
-import semulator.execution.ExecutionContextImpl;
-import semulator.impl.api.Op;
+import semulator.impl.api.skeleton.AbstractOpBasic;
+import semulator.impl.api.skeleton.Op;
+import semulator.label.Label;
+import semulator.variable.Variable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class SprogramImpl implements SProgram{
+public class SprogramImpl implements SProgram {
     private final String name;
     private final List<Op> opList;
+    private int OpListindex;
+    List<Variable> vars;
+
 
     public SprogramImpl(String name) {
-    this.name = name;
-    opList = new ArrayList<>();
+        this.name = name;
+        opList = new ArrayList<>();
+        OpListindex = 0;
+
     }
+    public void setVars(List<Variable> vars) {
+        this.vars = vars;
+    }
+    public int getOpsIndex()
+    {
+        return OpListindex;
+    }
+    @Override
+    public Variable GetNextVar(int j) {
+        return vars.get(j);
+    }
+
+    @Override
+    public int getAmountOfVars() {
+        return vars.size();
+    }
+
     @Override
     public int calculateCycles() {
         return 0;
@@ -43,4 +69,19 @@ public class SprogramImpl implements SProgram{
     public String getName() {
         return name;
     }
+
+    public Op getNextOp() {
+        return opList.get(OpListindex++);
+    }
+
+    @Override
+    public void ChangeOpIndex(Op currentOp) {
+      if (currentOp==null)
+            throw(new IllegalArgumentException("the op is null"));
+      else if(opList.contains(currentOp))
+        OpListindex = opList.indexOf(currentOp);
+      else
+          throw(new IllegalArgumentException("the op is not in the program"));
+    }
 }
+

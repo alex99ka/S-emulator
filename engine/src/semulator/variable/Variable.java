@@ -5,4 +5,5 @@ public interface Variable {
     String getRepresntation();
 
     Variable RESULT = new VariableImpl(VariableType.RESULT, 0);
+
 }
