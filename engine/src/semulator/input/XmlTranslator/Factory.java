@@ -2,12 +2,12 @@ package semulator.input.XmlTranslator;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.annotation.*;
 import semulator.impl.api.basic.OpIncrease;
 import semulator.impl.api.skeleton.Op;
 import semulator.input.gen.XOp;
 import semulator.input.gen.XOpArguments;
 import semulator.input.gen.XProgram;
+import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.label.LabelImpl;
 import semulator.program.SProgram;
@@ -90,6 +90,7 @@ public class Factory
 
         // Prepare a set to track all variable names used (for initialization)
         Set<Variable> allVars = new HashSet<>();
+        List<Variable> inputVars = new ArrayList<>();
 
         // Convert each SInstruction to an Op object and add to program
         for (XOp inst : sInstructions) {
@@ -99,15 +100,7 @@ public class Factory
             String labelName = inst.getLabel();   // may be null
             int varIndex;
 
-            Label lbl = null;
-            // check if the label name has the format of first char is the letter "L" and the rest are digits
-            if (labelName != null && !labelName.isEmpty()) {
-                if (!labelName.matches("L\\d+")) {
-                    throw new IllegalArgumentException("Invalid label format: " + labelName
-                            + " (expected format: L followed by digits, e.g., L1, L2)");
-                }
-            lbl = new LabelImpl(Integer.parseInt(labelName.substring(1))); // remove the "L" prefix
-            }
+            Label lbl = getLabel(labelName);
 
             // Add the main variable to the set of variables
             if (varName == null || varName.isEmpty())
@@ -119,6 +112,10 @@ public class Factory
 
 
             allVars.add(curVar);  // track this variable for initialization
+            if(// if it's an input variable, track in inputVars list too
+                    vType == VariableType.INPUT && !inputVars.contains(curVar)) {
+                inputVars.add(curVar);
+            }
 
             Op op = null;  // will point to a new instruction object
             // Determine which specific Op subclass to instantiate based on the command name
@@ -136,7 +133,7 @@ public class Factory
                     // JumpNotZero needs the target label to jump to if variable != 0
                     String targetLabel = getArgumentValue(inst, "JNZLabel");
                     if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!labelName.matches("L\\d+")) {
+                        if (!targetLabel.matches("L\\d+")) {
                             throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JNZ target label"
                                     + " (expected format: L followed by digits, e.g., L1, L2)");
                         }
@@ -173,6 +170,10 @@ public class Factory
                             (srcVarName.startsWith("x") ? VariableType.INPUT : VariableType.WORK), Integer.parseInt(srcVarName.substring(1)))
                     ;
                     allVars.add(srcVar);  // source variable also involved
+                    if(// if it's an input variable, track in inputVars list too
+                            vType == VariableType.INPUT && !inputVars.contains(curVar)) {
+                        inputVars.add(curVar);
+                    }
                     op = new OpAssignment(curVar, lbl, srcVar);
                     break;
                 }
@@ -208,6 +209,10 @@ public class Factory
                                 (otherVarName.startsWith("x") ? VariableType.INPUT : VariableType.WORK), Integer.parseInt(otherVarName.substring(1)))
                                 ;
                         allVars.add(otherVar);  // second variable used in comparison
+                        if(// if it's an input variable, track in inputVars list too
+                                vType == VariableType.INPUT && !inputVars.contains(curVar)) {
+                            inputVars.add(curVar);
+                        }
                         if (targetLabel != null && !targetLabel.isEmpty()) {
                             if (!targetLabel.matches("L\\d+")) {
                                 throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JE_VARIABLE target label"
@@ -233,9 +238,22 @@ public class Factory
 
             // Also ensure the special result variable "y" exists and is initialized to 0
             allVars.add(Variable.RESULT);// add a result var
+            program.setInputVars(inputVars);
             return program;
         }
 
+    private static Label getLabel(String labelName) {
+        Label lbl = FixedLabel.EMPTY;
+        // check if the label name has the format of first char is the letter "L" and the rest are digits
+        if (labelName != null && !labelName.isEmpty()) {
+            if (!labelName.matches("L\\d+")) {
+                throw new IllegalArgumentException("Invalid label format: " + labelName
+                        + " (expected format: L followed by digits, e.g., L1, L2)");
+            }
+        lbl = new LabelImpl(Integer.parseInt(labelName.substring(1))); // remove the "L" prefix
+        }
+        return lbl;
+    }
 
 
     private String getArgumentValue(XOp inst, String argName) {

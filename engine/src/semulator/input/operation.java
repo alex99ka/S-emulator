@@ -41,7 +41,7 @@ public class operation {
         AbstractOpBasic jnz = new OpJumpNotZero(x1, l2, FixedLabel.EXIT);
 
 
-        p.setVars(vars);
+        //p.setVars(vars);
         p.addOp(increase);
         p.addOp(noop);
         p.addOp(decrease);

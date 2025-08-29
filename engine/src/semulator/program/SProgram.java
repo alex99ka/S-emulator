@@ -1,12 +1,11 @@
 package semulator.program;
 
-import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public interface SProgram {
     String getName();
@@ -28,7 +27,8 @@ public interface SProgram {
     Op getNextOp();
     void ChangeOpIndex(Op currentOp);
     int getOpsIndex();
-    void setVars(List<Variable> vars);
-
+    void setInputVars(List<Variable> vars);
+    void setVars(Set<Variable> vars);
+    Set<Variable> getAllVars();
     void addLabel(Label label, Op op);
 }

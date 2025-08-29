@@ -52,12 +52,18 @@ public class ExecutionContextImpl implements ExecutionContext {
         Map<Variable, Long> snap = new HashMap<>();
         Variable tmp;
 
-        for (int i = 0; i < program.getAmountOfVars(); i++) { //fills all the var with the input and the rest with 0
+        for (int i = 0; i < program.getAmountOfVars(); i++) { //fills all the input var with the input and the rest with 0
             tmp = program.GetNextVar(i);
             if (i < input.size())
                 snap.put(tmp, input.get(i));
             else
                 snap.put( tmp ,0L);
+        }
+
+        for(Variable v : program.getAllVars()) // make sure all vars are in the snap and if not add them with value 0
+        {
+            if(!snap.containsKey(v))
+                snap.put(v,0L);
         }
        snap.put(Variable.RESULT, 0L); //add the result var
        var first = Map.copyOf(snap);  // making an immutable copy

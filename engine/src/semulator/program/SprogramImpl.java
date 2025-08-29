@@ -6,10 +6,7 @@ import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SprogramImpl implements SProgram {
     private final String name;
@@ -17,6 +14,7 @@ public class SprogramImpl implements SProgram {
     private int OpListindex;
     List<Variable> vars;
     ExecutionContextImpl context;
+    Set<Variable> variables;
 
 
     public SprogramImpl(String name) {
@@ -24,6 +22,15 @@ public class SprogramImpl implements SProgram {
         opList = new ArrayList<>();
         OpListindex = 0;
         context = new ExecutionContextImpl();
+    }
+
+    public void setVars(Set<Variable> vars)
+    {
+        this.variables = vars;
+    }
+    public Set<Variable> getAllVars()
+    {
+        return variables;
     }
     public void addLabel(Label label, Op op)
     {
@@ -33,7 +40,7 @@ public class SprogramImpl implements SProgram {
         context.CreateSnap(this, input);
     }
 
-    public void setVars(List<Variable> vars) {
+    public void setInputVars(List<Variable> vars) {
         this.vars = vars;
     }
     public int getOpsIndex()
