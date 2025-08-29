@@ -100,7 +100,7 @@ public class Factory
             int varIndex;
 
             Label lbl = null;
-            // check if the labelname has the format of first char is the letter "L" and the rest are digits
+            // check if the label name has the format of first char is the letter "L" and the rest are digits
             if (labelName != null && !labelName.isEmpty()) {
                 if (!labelName.matches("L\\d+")) {
                     throw new IllegalArgumentException("Invalid label format: " + labelName
@@ -120,7 +120,7 @@ public class Factory
 
             allVars.add(curVar);  // track this variable for initialization
 
-            Op op;  // will point to a new instruction object
+            Op op = null;  // will point to a new instruction object
             // Determine which specific Op subclass to instantiate based on the command name
             switch (cmdName) {
                 case "INCREASE":
@@ -147,7 +147,7 @@ public class Factory
                 case "JUMP_ZERO": {
                     String targetLabel = getArgumentValue(inst, "JZLabel");
                     if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!labelName.matches("L\\d+")) {
+                        if (!targetLabel.matches("L\\d+")) {
                             throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JZ target label"
                                     + " (expected format: L followed by digits, e.g., L1, L2)");
                         }
@@ -158,7 +158,7 @@ public class Factory
                 case "GOTO_LABEL": {
                     String targetLabel = getArgumentValue(inst, "gotoLabel");
                     if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!labelName.matches("L\\d+")) {
+                        if (!targetLabel.matches("L\\d+")) {
                             throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for GO_TO_LABEL target label"
                                     + " (expected format: L followed by digits, e.g., L1, L2)");
                         }
@@ -185,7 +185,7 @@ public class Factory
                 case "JUMP_EQUAL_CONSTANT": {
                     String targetLabel = getArgumentValue(inst, "JEConstantLabel");
                     String constValStr = getArgumentValue(inst, "constantValue");
-                    Long constVal;
+                    long constVal;
                     try {
                         constVal = Long.parseLong(constValStr);
                     } catch (NumberFormatException e) {
@@ -193,13 +193,13 @@ public class Factory
                                 + " (expected a valid integer)");
                     }
                     if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!labelName.matches("L\\d+")) {
+                        if (!targetLabel.matches("L\\d+")) {
                             throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JE_CONSTANT target label"
                                     + " (expected format: L followed by digits, e.g., L1, L2)");
                         }
                         op = new OpJumpEqualConstant(curVar, lbl, new LabelImpl(Integer.parseInt(targetLabel.substring(1))), constVal);
-                        break;
                     }
+                    break;
                 }
                     case "JUMP_EQUAL_VARIABLE": {
                         String targetLabel = getArgumentValue(inst, "JEVariableLabel");
@@ -209,7 +209,7 @@ public class Factory
                                 ;
                         allVars.add(otherVar);  // second variable used in comparison
                         if (targetLabel != null && !targetLabel.isEmpty()) {
-                            if (!labelName.matches("L\\d+")) {
+                            if (!targetLabel.matches("L\\d+")) {
                                 throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JE_VARIABLE target label"
                                         + " (expected format: L followed by digits, e.g., L1, L2)");
                             }
