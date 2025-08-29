@@ -10,12 +10,12 @@ import semulator.variable.Variable;
 import java.util.ArrayList;
 
 public class OpZeroVariable extends AbstractOpBasic {
-    public OpZeroVariable(OpData opData, Variable variable) {
-        this(opData, variable, FixedLabel.EMPTY);
+    public OpZeroVariable( Variable variable) {
+        this(variable, FixedLabel.EMPTY);
     }
 
-    public OpZeroVariable(OpData opData, Variable variable, Label label) {
-        super(opData, variable, label);
+    public OpZeroVariable(Variable variable, Label label) {
+        super(OpData.ZERO_VARIABLE, variable, label);
     }
 
     @Override

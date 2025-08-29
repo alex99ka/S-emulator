@@ -1,5 +1,6 @@
 package semulator.program;
 
+import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
@@ -15,14 +16,23 @@ public class SprogramImpl implements SProgram {
     private final List<Op> opList;
     private int OpListindex;
     List<Variable> vars;
+    ExecutionContextImpl context;
 
 
     public SprogramImpl(String name) {
         this.name = name;
         opList = new ArrayList<>();
         OpListindex = 0;
-
+        context = new ExecutionContextImpl();
     }
+    public void addLabel(Label label, Op op)
+    {
+        context.getLabelMap().put(label,op);
+    }
+    public void createFirstSnap(List<Long> input) {
+        context.CreateSnap(this, input);
+    }
+
     public void setVars(List<Variable> vars) {
         this.vars = vars;
     }

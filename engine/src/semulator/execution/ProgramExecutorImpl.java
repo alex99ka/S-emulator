@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ProgramExecutorImpl implements ProgramExecutor {
-    ExecutionContextImpl context;
+    ExecutionContextImpl context; // THE PROGRAM NEEDS TO HOLD THE CONTEXT
     SProgram program;
     public ProgramExecutorImpl(SProgram program) {
         this.program = program;

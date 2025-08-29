@@ -38,9 +38,8 @@ public class ExecutionContextImpl implements ExecutionContext {
     }
 
 
-    public ExecutionContextImpl(SProgram program, List<Long> input) {
+    public ExecutionContextImpl() {
         snapshots = new ArrayList<>(); // move to another function that will handle inputs from the user
-        CreateSnap(program, input);// probably I can get the work var from the program but not sure...
         labelMap = new HashMap<>();
     }
 
@@ -48,7 +47,7 @@ public class ExecutionContextImpl implements ExecutionContext {
     public List getSnapshots() {
         return snapshots;
     }
-   private void CreateSnap(SProgram program,List<Long> input) {
+   public void CreateSnap(SProgram program,List<Long> input) {
 
         Map<Variable, Long> snap = new HashMap<>();
         Variable tmp;

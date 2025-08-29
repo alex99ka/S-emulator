@@ -29,4 +29,6 @@ public interface SProgram {
     void ChangeOpIndex(Op currentOp);
     int getOpsIndex();
     void setVars(List<Variable> vars);
+
+    void addLabel(Label label, Op op);
 }
