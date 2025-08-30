@@ -17,9 +17,9 @@ public class ProgramExecutorImpl implements ProgramExecutor {
     public ProgramExecutorImpl(SProgram program) {
         this.program = program;
     }
-     // the program loop
+     // the 4th command!
     public Long run(List<Long> input) {
-        this.context = new ExecutionContextImpl(program, input); // at this point the program pairs input values to input variables
+        program.createFirstSnap(input);
         Op currentOp = program.getNextOp();
         Label nextLabel;
         do {

@@ -6,6 +6,9 @@ public class LabelImpl implements Label {
     public LabelImpl(int number) {
         this.label = "L" + number;
     }
+    public LabelImpl(String label) {
+        this.label = label;
+    }
 
     @Override
     public String getLabelRepresentation() {return this.label;}

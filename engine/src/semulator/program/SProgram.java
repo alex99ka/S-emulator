@@ -21,7 +21,7 @@ public interface SProgram {
     int calculateCycles();
 
     Variable GetNextVar(int j);
-
+    public void createFirstSnap(List<Long> input);
     int getAmountOfVars();
 
     Op getNextOp();

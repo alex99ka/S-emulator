@@ -2,22 +2,16 @@ package semulator.input.XmlTranslator;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import semulator.impl.api.basic.OpDecrease;
 import semulator.impl.api.basic.OpIncrease;
+import semulator.impl.api.basic.OpJumpNotZero;
+import semulator.impl.api.basic.OpNeutral;
 import semulator.impl.api.skeleton.Op;
-import semulator.input.gen.XOp;
-import semulator.input.gen.XOpArguments;
-import semulator.input.gen.XProgram;
-import semulator.label.FixedLabel;
-import semulator.label.Label;
-import semulator.label.LabelImpl;
-import semulator.program.SProgram;
-import semulator.program.SprogramImpl;
-import semulator.impl.api.basic.*;
 import semulator.impl.api.synthetic.*;
-import semulator.variable.Variable;
-import semulator.variable.VariableImpl;
-import semulator.variable.VariableType;
-
+import semulator.input.gen.*;
+import semulator.label.*;
+import semulator.program.*;
+import semulator.variable.*;
 import java.io.File;
 import java.util.*;
 
@@ -44,7 +38,7 @@ public class Factory
         try {
             JAXBContext context = JAXBContext.newInstance(XProgram.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            xProgram = (XProgram) unmarshaller.unmarshal(xmlFile);
+            xProgram =  (XProgram) unmarshaller.unmarshal(xmlFile);
         } catch (JAXBException e) {
             throw new RuntimeException("Failed to parse XML: " + e.getMessage(), e);
         }
@@ -105,7 +99,10 @@ public class Factory
             // Add the main variable to the set of variables
             if (varName == null || varName.isEmpty())
                 throw new IllegalArgumentException("Instruction missing variable: " + cmdName);
-            varIndex = Integer.parseInt(varName.substring(1)); // extract index after first char
+            if(!varName.equals("y"))
+                varIndex = Integer.parseInt(varName.substring(1)); // extract index after first char
+            else
+                varIndex = 0; // for result variable "y", index is 0
             VariableType vType = varName.equals("y") ? VariableType.RESULT :
                     (varName.startsWith("x") ? VariableType.INPUT : VariableType.WORK);
             Variable curVar = new VariableImpl(vType, varIndex);
@@ -137,7 +134,7 @@ public class Factory
                             throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JNZ target label"
                                     + " (expected format: L followed by digits, e.g., L1, L2)");
                         }
-                    }
+                    } //not sure if this check is needed since already checked above
                     op = new OpJumpNotZero(curVar,new LabelImpl(Integer.parseInt(targetLabel.substring(1))),lbl);
                     break;
                 }
@@ -155,12 +152,15 @@ public class Factory
                 case "GOTO_LABEL": {
                     String targetLabel = getArgumentValue(inst, "gotoLabel");
                     if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!targetLabel.matches("L\\d+")) {
+                        if (!targetLabel.matches("L\\d+") && !targetLabel.equals("EXIT")) {
                             throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for GO_TO_LABEL target label"
                                     + " (expected format: L followed by digits, e.g., L1, L2)");
                         }
                     }
-                    op = new OpGoToLabel(curVar, lbl, new LabelImpl(Integer.parseInt(targetLabel.substring(1))));
+                    else
+                        throw new IllegalArgumentException("the label was either a null or empty string");
+
+                    op = new OpGoToLabel(curVar, lbl, new LabelImpl(targetLabel));
                     break;
                 }
                 case "ASSIGNMENT": {
@@ -171,7 +171,7 @@ public class Factory
                     ;
                     allVars.add(srcVar);  // source variable also involved
                     if(// if it's an input variable, track in inputVars list too
-                            vType == VariableType.INPUT && !inputVars.contains(curVar)) {
+                            srcVar.getType() == VariableType.INPUT && !inputVars.contains(curVar)) {
                         inputVars.add(curVar);
                     }
                     op = new OpAssignment(curVar, lbl, srcVar);
@@ -210,8 +210,8 @@ public class Factory
                                 ;
                         allVars.add(otherVar);  // second variable used in comparison
                         if(// if it's an input variable, track in inputVars list too
-                                vType == VariableType.INPUT && !inputVars.contains(curVar)) {
-                            inputVars.add(curVar);
+                                otherVar.getType() == VariableType.INPUT && !inputVars.contains(curVar)) {
+                            inputVars.add(otherVar);
                         }
                         if (targetLabel != null && !targetLabel.isEmpty()) {
                             if (!targetLabel.matches("L\\d+")) {
@@ -228,7 +228,7 @@ public class Factory
                     default:
                         throw new IllegalArgumentException("Unknown instruction name: " + cmdName);
                 }
-                if (lbl != null) {
+                if (lbl != null && lbl != FixedLabel.EMPTY) {
                     program.addLabel(lbl, op);
                 }
 
@@ -237,7 +237,7 @@ public class Factory
 
 
             // Also ensure the special result variable "y" exists and is initialized to 0
-            allVars.add(Variable.RESULT);// add a result var
+            allVars.add(Variable.RESULT);// add a result var incase not defined in the program;
             program.setInputVars(inputVars);
             return program;
         }
