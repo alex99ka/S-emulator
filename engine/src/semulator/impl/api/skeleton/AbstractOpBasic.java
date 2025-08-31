@@ -4,16 +4,18 @@ import semulator.label.*;
 
 public abstract class AbstractOpBasic implements Op {
 
-   private final OpData opData;
-   private final Label label;
-   private final Variable variable;
+    private final OpData opData;
+    private final Label label;
+    private final Variable variable;
 
 
 
-   //Ctors
-    protected AbstractOpBasic(OpData opData,Variable variable) { //allow to create without label
-       this(opData, variable,FixedLabel.EMPTY);
-   }
+    //Ctors
+    protected AbstractOpBasic(OpData opData, Variable variable) { //allow to create without label
+        this(opData, variable, FixedLabel.EMPTY);
+    }
+
+
     public AbstractOpBasic(OpData opData, Variable variable, Label label) {
         this.opData = opData;
         this.label = label;
@@ -27,7 +29,7 @@ public abstract class AbstractOpBasic implements Op {
 
     @Override
     public String getType() {
-        return variable.getRepresntation();
+        return opData.getType().equals(OpType.BASIC)? "BASIC" : "SYNTHETIC";
     }
 
     @Override
@@ -41,8 +43,12 @@ public abstract class AbstractOpBasic implements Op {
         return opData.getName();
     }
 
+    public int getDegree() {
+        return opData.getDegree();
+    }
+
     @Override
-    public int getcycles() {
+    public int getCycles() {
         return opData.getCycles();
     }
 
@@ -50,4 +56,16 @@ public abstract class AbstractOpBasic implements Op {
     public String toString() {
         return getName();
     }
+
+    //implement a deep clone method
+    @Override
+    public abstract Op myClone();
+
+    @Override
+    public String getRepresentation()
+    {
+     return " ";
+    }
+
+
 }

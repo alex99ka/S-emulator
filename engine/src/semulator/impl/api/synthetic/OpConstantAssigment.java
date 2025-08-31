@@ -29,4 +29,13 @@ public class OpConstantAssigment extends AbstractOpBasic {
         program.AddSnap(vars,vals);
         return FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpConstantAssigment myClone() {
+        return new OpConstantAssigment(getVariable().myClone(), getLabel().myClone(), constant);
+    }
+    @Override
+    public String getRepresentation() {
+        return String.format("%s ← %d", getVariable().getRepresentation(), constant);
+    }
 }

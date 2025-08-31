@@ -18,7 +18,7 @@ import java.util.*;
 public class Factory
 {
     XProgram xProgram;
-    Set<Label> definedLabels;
+    LinkedHashSet<Label> definedLabels;
     List<XOp> sInstructions;
     SProgram program;
 
@@ -49,7 +49,7 @@ public class Factory
             throw new IllegalArgumentException("Invalid program: no instructions defined.");
         }
         // Collect all labels defined in the program
-        definedLabels = new HashSet<>();
+        definedLabels = new LinkedHashSet<>();
         for (XOp inst : sInstructions) {
             if (inst.getLabel() != null) {
                 if (inst.getLabel().equals( FixedLabel.EXIT.getLabelRepresentation()))
@@ -258,9 +258,10 @@ public class Factory
                 program.getOps().add(op);  // add the constructed operation to the program's list
             }
             // Also ensure the special result variable "y" exists and is initialized to 0
-            allVars.add(Variable.RESULT);
+        allVars.add(Variable.RESULT);
+        program.addLabelSet(definedLabels);
         //sort input vars by there get representation method
-        inputVars.sort(Comparator.comparing(Variable::getRepresntation));
+        inputVars.sort(Comparator.comparing(Variable::getRepresentation));
             program.setInputVars(inputVars);
             program.setInputVars(allVars);
             return program;

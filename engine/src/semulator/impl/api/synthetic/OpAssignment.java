@@ -32,4 +32,13 @@ public class OpAssignment extends AbstractOpBasic {
 
         return FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpAssignment myClone() {
+        return new OpAssignment(getVariable().myClone(), getLabel().myClone(), outSideVar.myClone());
+    }
+    @Override
+    public String getRepresentation() {
+        return String.format("%s ← %s", getVariable().getRepresentation(), outSideVar.getRepresentation());
+    }
 }

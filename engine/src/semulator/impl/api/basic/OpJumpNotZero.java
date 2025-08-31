@@ -28,4 +28,14 @@ public class OpJumpNotZero extends AbstractOpBasic {
         }
         return FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpJumpNotZero myClone() {
+        return new OpJumpNotZero(getVariable().myClone(), jnzLabel.myClone(), getLabel().myClone());
+    }
+    @Override
+    public String getRepresentation()
+    {
+        return String.format("IF %s!=0 GOTO %s", getVariable().getRepresentation(), jnzLabel.getLabelRepresentation());
+    }
 }

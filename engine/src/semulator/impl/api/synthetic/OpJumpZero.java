@@ -22,4 +22,13 @@ public class OpJumpZero extends AbstractOpBasic {
     public Label execute(SProgram program) {
         return program.getVariableValue(getVariable()) == 0L ? JZlabel: FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpJumpZero myClone() {
+        return new OpJumpZero(getVariable().myClone(), getLabel().myClone(), JZlabel.myClone());
+    }
+    @Override
+    public String getRepresentation() {
+        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), JZlabel.getLabelRepresentation());
+    }
 }

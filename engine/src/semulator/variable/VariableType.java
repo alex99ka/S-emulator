@@ -15,4 +15,5 @@ public enum VariableType {
     };
     public abstract String getVariableRepresentation(int number);
 
+
 }

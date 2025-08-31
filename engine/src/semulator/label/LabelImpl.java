@@ -31,5 +31,10 @@ public class LabelImpl implements Label {
     public int hashCode() {
         return Objects.hash(getLabelRepresentation());
     }
+    public Label myClone() {
+        return new LabelImpl(this.label);
+    }
+
+
 }
 

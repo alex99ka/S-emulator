@@ -26,4 +26,14 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
     public Label execute(SProgram program) {
         return program.getVariableValue(getVariable()).equals(constant) ? JEConstantLabel : FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpJumpEqualConstant myClone() {
+        return new OpJumpEqualConstant(getVariable().myClone(), getLabel().myClone(), JEConstantLabel.myClone(), constant);
+    }
+
+    @Override
+    public String getRepresentation() {
+        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation());
+    }
 }

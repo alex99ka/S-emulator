@@ -5,6 +5,8 @@ import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
+import semulator.variable.VariableImpl;
+
 import java.util.ArrayList;
 
 public class OpDecrease extends AbstractOpBasic {
@@ -22,11 +24,22 @@ public class OpDecrease extends AbstractOpBasic {
         return FixedLabel.EMPTY;
     }
 
+
     public OpDecrease(Variable variable) {
         super(OpData.DECREASE, variable);
     }
 
     public OpDecrease(Variable variable, Label label) {
         super(OpData.DECREASE, variable, label);
+    }
+    //implementation of deep clone
+    @Override
+    public OpDecrease myClone() {
+        return new OpDecrease(getVariable().myClone(),getLabel().myClone());
+    }
+
+    @Override
+    public String getRepresentation() {
+        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
 }

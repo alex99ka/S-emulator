@@ -19,4 +19,14 @@ public class OpNeutral extends AbstractOpBasic {
     public Label execute(SProgram program) {
         return FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpNeutral myClone() {
+        return new OpNeutral(getVariable().myClone(), getLabel().myClone());
+    }
+    @Override
+    public String getRepresentation()
+    {
+        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation());
+    }
 }

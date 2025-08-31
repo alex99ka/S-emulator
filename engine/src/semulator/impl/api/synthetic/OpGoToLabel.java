@@ -21,4 +21,14 @@ public class OpGoToLabel extends AbstractOpBasic {
     public Label execute(SProgram program) {
         return nextLabel;
     }
+    //implementation of deep clone
+    @Override
+    public OpGoToLabel myClone() {
+        return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), nextLabel.myClone());
+    }
+    @Override
+    public String getRepresentation()
+    {
+        return String.format("GOTO %s", nextLabel.getLabelRepresentation());
+    }
 }

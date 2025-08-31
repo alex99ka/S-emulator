@@ -31,4 +31,13 @@ public class OpIncrease extends AbstractOpBasic {
 
         return FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpIncrease myClone() {
+        return new OpIncrease(getVariable().myClone(), getLabel().myClone());
+    }
+    @Override
+    public String getRepresentation() {
+        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation());
+    }
 }

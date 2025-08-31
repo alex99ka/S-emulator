@@ -28,4 +28,13 @@ public class OpZeroVariable extends AbstractOpBasic {
         program.AddSnap(vars,vals);
         return FixedLabel.EMPTY;
     }
+    //implementation of deep clone
+    @Override
+    public OpZeroVariable myClone() {
+        return new OpZeroVariable(getVariable().myClone(), getLabel().myClone());
+    }
+    @Override
+    public String getRepresentation() {
+        return String.format("%s ← 0", getVariable().getRepresentation());
+    }
 }
