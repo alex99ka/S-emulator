@@ -29,6 +29,7 @@ public class OpAssignment extends AbstractOpBasic {
         vars.add(getVariable());
         vals.add(variableValue);
         program.AddSnap(vars,vals);
+        program.increaseCycleCounter(getCycles());
 
         return FixedLabel.EMPTY;
     }

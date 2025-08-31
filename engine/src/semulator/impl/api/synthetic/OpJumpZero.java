@@ -20,6 +20,7 @@ public class OpJumpZero extends AbstractOpBasic {
 
     @Override
     public Label execute(SProgram program) {
+        program.increaseCycleCounter(getCycles());
         return program.getVariableValue(getVariable()) == 0L ? JZlabel: FixedLabel.EMPTY;
     }
     //implementation of deep clone

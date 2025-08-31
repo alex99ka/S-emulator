@@ -17,6 +17,7 @@ public class OpNeutral extends AbstractOpBasic {
 
     @Override
     public Label execute(SProgram program) {
+        program.increaseCycleCounter(getCycles());
         return FixedLabel.EMPTY;
     }
     //implementation of deep clone

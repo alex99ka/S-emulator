@@ -23,6 +23,7 @@ public interface SProgram
     int calculateMaxDegree();
 
     int calculateCycles();
+    void increaseCycleCounter(int cycles);
 
     Variable GetNextVar(int j);
     public void createFirstSnap(List<Long> input);

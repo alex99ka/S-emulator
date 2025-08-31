@@ -19,6 +19,7 @@ public class OpGoToLabel extends AbstractOpBasic {
 
     @Override
     public Label execute(SProgram program) {
+        program.increaseCycleCounter(getCycles());
         return nextLabel;
     }
     //implementation of deep clone

@@ -27,6 +27,8 @@ public class OpConstantAssigment extends AbstractOpBasic {
         vars.add(getVariable());
         vals.add(constant);
         program.AddSnap(vars,vals);
+        program.increaseCycleCounter(getCycles());
+
         return FixedLabel.EMPTY;
     }
     //implementation of deep clone

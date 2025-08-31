@@ -20,6 +20,7 @@ public class OpDecrease extends AbstractOpBasic {
         vals.add(variableValue);
 
         program.AddSnap(vars,vals);
+        program.increaseCycleCounter(getCycles());
 
         return FixedLabel.EMPTY;
     }

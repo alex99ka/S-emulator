@@ -13,11 +13,12 @@ import java.util.*;
 public class SprogramImpl implements SProgram {
     private final String name;
     private final List<Op> opList;
+    private int cycles;
     private int OpListindex;
-    List<Variable> inputVars;
-    ExecutionContextImpl context;
-    Set<Variable> variables;
-    LinkedHashSet <Label> labelsHashSet;
+    private List<Variable> inputVars;
+    private ExecutionContextImpl context;
+    private Set<Variable> variables;
+    private LinkedHashSet <Label> labelsHashSet;
 
 
     public SprogramImpl(String name) {
@@ -25,6 +26,10 @@ public class SprogramImpl implements SProgram {
         opList = new ArrayList<>();
         OpListindex = 0;
         context = new ExecutionContextImpl();
+        cycles = 0;
+        variables = new HashSet<>();
+        labelsHashSet = new LinkedHashSet<>();
+        inputVars = new ArrayList<>();
     }
 
     public void setInputVars(Set<Variable> inputVars)
@@ -62,7 +67,7 @@ public class SprogramImpl implements SProgram {
 
     @Override
     public int calculateCycles() {
-        return 0;
+        return cycles;
     }
 
     @Override
@@ -130,6 +135,8 @@ public class SprogramImpl implements SProgram {
     public void addLabelSet(LinkedHashSet<Label> labels) {
         this.labelsHashSet = labels;
     }
+
+    public void increaseCycleCounter(int cycles) {this.cycles += cycles;}
 
     public void print()
     {

@@ -26,6 +26,7 @@ public class OpJumpNotZero extends AbstractOpBasic {
         if (variableValue != 0) {
             return jnzLabel;
         }
+        program.increaseCycleCounter(getCycles());
         return FixedLabel.EMPTY;
     }
     //implementation of deep clone

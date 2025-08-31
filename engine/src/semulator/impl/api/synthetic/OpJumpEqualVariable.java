@@ -25,6 +25,7 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
 
     @Override
     public Label execute(SProgram program) {
+        program.increaseCycleCounter(getCycles());
         return program.getVariableValue(getVariable()).equals( program.getVariableValue(comparableVariable))? JEConstantLabel : FixedLabel.EMPTY;
     }
     //implementation of deep clone

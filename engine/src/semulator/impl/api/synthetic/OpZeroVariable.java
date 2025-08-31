@@ -26,6 +26,7 @@ public class OpZeroVariable extends AbstractOpBasic {
         vars.add(getVariable());
         vals.add(0L);
         program.AddSnap(vars,vals);
+        program.increaseCycleCounter(getCycles());
         return FixedLabel.EMPTY;
     }
     //implementation of deep clone
