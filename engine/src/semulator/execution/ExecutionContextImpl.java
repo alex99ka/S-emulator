@@ -1,16 +1,9 @@
 package semulator.execution;
-
-import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
-import semulator.impl.api.skeleton.OpType;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
-import semulator.program.SprogramImpl;
 import semulator.variable.Variable;
-import semulator.variable.VariableImpl;
-import semulator.variable.VariableType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

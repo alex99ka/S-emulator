@@ -18,7 +18,7 @@ import java.util.*;
 public class Factory
 {
     XProgram xProgram;
-    Set<String> definedLabels;
+    Set<Label> definedLabels;
     List<XOp> sInstructions;
     SProgram program;
 
@@ -52,7 +52,10 @@ public class Factory
         definedLabels = new HashSet<>();
         for (XOp inst : sInstructions) {
             if (inst.getLabel() != null) {
-                definedLabels.add(inst.getLabel());
+                if (inst.getLabel().equals( FixedLabel.EXIT.getLabelRepresentation()))
+                    definedLabels.add(FixedLabel.EXIT);
+                else
+                    definedLabels.add(new LabelImpl( inst.getLabel()));
             }
         }
         // Check all instruction arguments for label references that are not defined
@@ -68,7 +71,8 @@ public class Factory
                         // "EXIT" is considered a special target (program termination), skip existence check
                         continue;
                     }
-                    if (!definedLabels.contains(argValue)) {
+                    if (!definedLabels.contains(new LabelImpl(argValue)))
+                    {
                         // Found a jump to a label that doesn't exist in the program
                         throw new IllegalArgumentException("Invalid program: jump to undefined label \""
                                 + argValue + "\" in instruction \""
@@ -85,6 +89,8 @@ public class Factory
         // Prepare a set to track all variable names used (for initialization)
         Set<Variable> allVars = new HashSet<>();
         List<Variable> inputVars = new ArrayList<>();
+        Label lbl;
+        String labelRegex = "L\\d+"; // regex pattern for valid labels like L1, L2, etc.
 
         // Convert each SInstruction to an Op object and add to program
         for (XOp inst : sInstructions) {
@@ -94,7 +100,14 @@ public class Factory
             String labelName = inst.getLabel();   // may be null
             int varIndex;
 
-            Label lbl = getLabel(labelName);
+            if (labelName == null || labelName.equals( FixedLabel.EMPTY.getLabelRepresentation() )|| labelName.isEmpty())
+                lbl = FixedLabel.EMPTY;
+           else  if (labelName.equals( FixedLabel.EXIT.getLabelRepresentation()))
+            {
+             lbl = FixedLabel.EXIT;
+            }
+            else
+                lbl = new LabelImpl(labelName);
 
             // Add the main variable to the set of variables
             if (varName == null || varName.isEmpty())
@@ -128,39 +141,44 @@ public class Factory
                     break;
                 case "JUMP_NOT_ZERO": {
                     // JumpNotZero needs the target label to jump to if variable != 0
-                    String targetLabel = getArgumentValue(inst, "JNZLabel");
-                    if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!targetLabel.matches("L\\d+")) {
-                            throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JNZ target label"
-                                    + " (expected format: L followed by digits, e.g., L1, L2)");
-                        }
-                    } //not sure if this check is needed since already checked above
-                    op = new OpJumpNotZero(curVar,new LabelImpl(Integer.parseInt(targetLabel.substring(1))),lbl);
+                    String targetLabelName = getArgumentValue(inst, "JNZLabel");
+                    Label targetLabel;
+                    if (targetLabelName.equals( FixedLabel.EXIT.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EXIT;
+                    } else if (targetLabelName.equals(FixedLabel.EMPTY.getLabelRepresentation())) {
+                       targetLabel = FixedLabel.EMPTY;
+                    }
+                    else
+                        targetLabel = new LabelImpl(Integer.parseInt(targetLabelName.substring(1)));
+
+                    op = new OpJumpNotZero(curVar,targetLabel,lbl);
                     break;
                 }
                 case "JUMP_ZERO": {
-                    String targetLabel = getArgumentValue(inst, "JZLabel");
-                    if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!targetLabel.matches("L\\d+")) {
-                            throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JZ target label"
-                                    + " (expected format: L followed by digits, e.g., L1, L2)");
-                        }
+                    String targetLabelName = getArgumentValue(inst, "JZLabel");
+                    Label targetLabel;
+                    if (targetLabelName.equals( FixedLabel.EXIT.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EXIT;
+                    } else if (targetLabelName.equals(FixedLabel.EMPTY.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EMPTY;
                     }
-                    op = new OpJumpZero(curVar, lbl, new LabelImpl(Integer.parseInt(targetLabel.substring(1))));
+                    else
+                        targetLabel = new LabelImpl(Integer.parseInt(targetLabelName.substring(1)));
+                    op = new OpJumpZero(curVar, lbl, targetLabel);
                     break;
                 }
                 case "GOTO_LABEL": {
-                    String targetLabel = getArgumentValue(inst, "gotoLabel");
-                    if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!targetLabel.matches("L\\d+") && !targetLabel.equals("EXIT")) {
-                            throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for GO_TO_LABEL target label"
-                                    + " (expected format: L followed by digits, e.g., L1, L2)");
-                        }
+                    String targetLabelName = getArgumentValue(inst, "gotoLabel");
+                    Label targetLabel;
+                    if (targetLabelName.equals( FixedLabel.EXIT.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EXIT;
+                    } else if (targetLabelName.equals(FixedLabel.EMPTY.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EMPTY;
                     }
                     else
-                        throw new IllegalArgumentException("the label was either a null or empty string");
+                        targetLabel = new LabelImpl(Integer.parseInt(targetLabelName.substring(1)));
 
-                    op = new OpGoToLabel(curVar, lbl, new LabelImpl(targetLabel));
+                    op = new OpGoToLabel(curVar, lbl, targetLabel);
                     break;
                 }
                 case "ASSIGNMENT": {
@@ -172,7 +190,7 @@ public class Factory
                     allVars.add(srcVar);  // source variable also involved
                     if(// if it's an input variable, track in inputVars list too
                             srcVar.getType() == VariableType.INPUT && !inputVars.contains(curVar)) {
-                        inputVars.add(curVar);
+                        inputVars.add(srcVar);
                     }
                     op = new OpAssignment(curVar, lbl, srcVar);
                     break;
@@ -184,7 +202,7 @@ public class Factory
                     break;
                 }
                 case "JUMP_EQUAL_CONSTANT": {
-                    String targetLabel = getArgumentValue(inst, "JEConstantLabel");
+                    String targetLabelName = getArgumentValue(inst, "JEConstantLabel");
                     String constValStr = getArgumentValue(inst, "constantValue");
                     long constVal;
                     try {
@@ -193,17 +211,20 @@ public class Factory
                         throw new IllegalArgumentException("Invalid constant value: " + constValStr
                                 + " (expected a valid integer)");
                     }
-                    if (targetLabel != null && !targetLabel.isEmpty()) {
-                        if (!targetLabel.matches("L\\d+")) {
-                            throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JE_CONSTANT target label"
-                                    + " (expected format: L followed by digits, e.g., L1, L2)");
-                        }
-                        op = new OpJumpEqualConstant(curVar, lbl, new LabelImpl(Integer.parseInt(targetLabel.substring(1))), constVal);
+                    Label targetLabel;
+                    if (targetLabelName.equals( FixedLabel.EXIT.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EXIT;
+                    } else if (targetLabelName.equals(FixedLabel.EMPTY.getLabelRepresentation())) {
+                        targetLabel = FixedLabel.EMPTY;
                     }
+                    else
+                        targetLabel = new LabelImpl(Integer.parseInt(targetLabelName.substring(1)));
+                    op = new OpJumpEqualConstant(curVar, lbl, targetLabel, constVal);
+
                     break;
                 }
                     case "JUMP_EQUAL_VARIABLE": {
-                        String targetLabel = getArgumentValue(inst, "JEVariableLabel");
+                        String targetLabelName = getArgumentValue(inst, "JEVariableLabel");
                         String otherVarName = getArgumentValue(inst, "variableName");
                         Variable otherVar = new VariableImpl(otherVarName.equals("y") ? VariableType.RESULT :
                                 (otherVarName.startsWith("x") ? VariableType.INPUT : VariableType.WORK), Integer.parseInt(otherVarName.substring(1)))
@@ -213,13 +234,15 @@ public class Factory
                                 otherVar.getType() == VariableType.INPUT && !inputVars.contains(curVar)) {
                             inputVars.add(otherVar);
                         }
-                        if (targetLabel != null && !targetLabel.isEmpty()) {
-                            if (!targetLabel.matches("L\\d+")) {
-                                throw new IllegalArgumentException("Invalid label format: " + targetLabel + "for JE_VARIABLE target label"
-                                        + " (expected format: L followed by digits, e.g., L1, L2)");
-                            }
+                        Label targetLabel;
+                        if (targetLabelName.equals( FixedLabel.EXIT.getLabelRepresentation())) {
+                            targetLabel = FixedLabel.EXIT;
+                        } else if (targetLabelName.equals(FixedLabel.EMPTY.getLabelRepresentation())) {
+                            targetLabel = FixedLabel.EMPTY;
                         }
-                        op = new OpJumpEqualVariable(curVar, lbl, new LabelImpl(Integer.parseInt(targetLabel.substring(1))), otherVar);
+                        else
+                            targetLabel = new LabelImpl(Integer.parseInt(targetLabelName.substring(1)));
+                        op = new OpJumpEqualVariable(curVar, lbl, targetLabel, otherVar);
                         break;
                     }
                     case "ZERO_VARIABLE":
@@ -228,32 +251,21 @@ public class Factory
                     default:
                         throw new IllegalArgumentException("Unknown instruction name: " + cmdName);
                 }
-                if (lbl != null && lbl != FixedLabel.EMPTY) {
+                if (lbl != FixedLabel.EXIT && lbl != FixedLabel.EMPTY) {
                     program.addLabel(lbl, op);
                 }
 
                 program.getOps().add(op);  // add the constructed operation to the program's list
             }
-
-
             // Also ensure the special result variable "y" exists and is initialized to 0
-            allVars.add(Variable.RESULT);// add a result var incase not defined in the program;
+            allVars.add(Variable.RESULT);
+        //sort input vars by there get representation method
+        inputVars.sort(Comparator.comparing(Variable::getRepresntation));
             program.setInputVars(inputVars);
+            program.setInputVars(allVars);
             return program;
         }
 
-    private static Label getLabel(String labelName) {
-        Label lbl = FixedLabel.EMPTY;
-        // check if the label name has the format of first char is the letter "L" and the rest are digits
-        if (labelName != null && !labelName.isEmpty()) {
-            if (!labelName.matches("L\\d+")) {
-                throw new IllegalArgumentException("Invalid label format: " + labelName
-                        + " (expected format: L followed by digits, e.g., L1, L2)");
-            }
-        lbl = new LabelImpl(Integer.parseInt(labelName.substring(1))); // remove the "L" prefix
-        }
-        return lbl;
-    }
 
 
     private String getArgumentValue(XOp inst, String argName) {

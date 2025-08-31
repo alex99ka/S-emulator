@@ -26,20 +26,8 @@ import static java.lang.System.exit;
 
 public class Main {
     public static void main(String[] args) {
-
-
         Long result;
-//
-//        List<Long> input = new ArrayList<>();
-//        input.add(3L);
-//        input.add(6L);
-//        input.add(2L);
-
-
-//        SProgram p = new SprogramImpl("test");
         operation op = new operation(); // should create ctor the does
-//        op.debugging();
-
         SProgram p = new SprogramImpl("test");
         // here should be the part to read a xml file and create the program with the path C:\Users\User\Downloads\example 1 s- emulator
         // and the file name is minus.xml
@@ -66,7 +54,9 @@ public class Main {
             result = programExecutor.run(op.getUserInput()); // here should be the output of scanner !!!
         } catch (Exception e)
         {
+            System.out.println(e.getMessage());
             result = null;
         }
+        System.out.println("The result is: " + result);
     }
 }

@@ -1,7 +1,6 @@
 package semulator.program;
 
 import semulator.execution.ExecutionContextImpl;
-import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;
@@ -12,7 +11,7 @@ public class SprogramImpl implements SProgram {
     private final String name;
     private final List<Op> opList;
     private int OpListindex;
-    List<Variable> vars;
+    List<Variable> inputVars;
     ExecutionContextImpl context;
     Set<Variable> variables;
 
@@ -24,9 +23,9 @@ public class SprogramImpl implements SProgram {
         context = new ExecutionContextImpl();
     }
 
-    public void setVars(Set<Variable> vars)
+    public void setInputVars(Set<Variable> inputVars)
     {
-        this.variables = vars;
+        this.variables = inputVars;
     }
     public Set<Variable> getAllVars()
     {
@@ -41,7 +40,7 @@ public class SprogramImpl implements SProgram {
     }
 
     public void setInputVars(List<Variable> vars) {
-        this.vars = vars;
+        this.inputVars = vars;
     }
     public int getOpsIndex()
     {
@@ -49,12 +48,12 @@ public class SprogramImpl implements SProgram {
     }
     @Override
     public Variable GetNextVar(int j) {
-        return vars.get(j);
+        return inputVars.get(j);
     }
 
     @Override
     public int getAmountOfVars() {
-        return vars.size();
+        return inputVars.size();
     }
 
     @Override
@@ -99,6 +98,17 @@ public class SprogramImpl implements SProgram {
         OpListindex = opList.indexOf(currentOp);
       else
           throw(new IllegalArgumentException("the op is not in the program"));
+    }
+    @Override
+    public Long getVariableValue(Variable var) {
+        return context.getVariableValue(var);
+    }
+    @Override
+    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {context.AddSnap(vars, vals);}
+
+    @Override
+    public Op getOpByLabel(Label label) {
+        return context.getLabelMap().get(label);
     }
 }
 

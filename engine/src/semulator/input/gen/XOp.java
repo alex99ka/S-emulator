@@ -1,6 +1,5 @@
 package semulator.input.gen;
 import jakarta.xml.bind.annotation.*;
-import semulator.impl.api.skeleton.Op;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)

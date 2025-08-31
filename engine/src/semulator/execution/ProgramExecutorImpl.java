@@ -4,15 +4,11 @@ import semulator.impl.api.skeleton.Op;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
-import semulator.program.SprogramImpl;
 import semulator.variable.Variable;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ProgramExecutorImpl implements ProgramExecutor {
-    ExecutionContextImpl context; // THE PROGRAM NEEDS TO HOLD THE CONTEXT
     SProgram program;
     public ProgramExecutorImpl(SProgram program) {
         this.program = program;
@@ -23,36 +19,25 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         Op currentOp = program.getNextOp();
         Label nextLabel;
         do {
-            nextLabel = currentOp.execute(context);
-
-            if (nextLabel == FixedLabel.EMPTY) {
-                if(program.getOpsIndex() == program.getOps().size()){
-                    break;
-                }
+            nextLabel = currentOp.execute(program);
+            if(nextLabel.equals(FixedLabel.EXIT))
+                 break;
+            else if (nextLabel.equals(FixedLabel.EMPTY))
                 currentOp = program.getNextOp();
-            } else {
-                currentOp = context.getLabelMap().get(nextLabel);
-                try {// throw exception if the label does not exist
-                    program.ChangeOpIndex(currentOp);
-                }
-                catch (Exception e){
-                    System.out.println(e.getMessage());
-                    throw e;
-                }
-
+             else {
+                currentOp = program.getOpByLabel(nextLabel);
+                program.ChangeOpIndex(currentOp);
             }
 
 
-        } while (nextLabel != FixedLabel.EXIT);
+        } while (program.getOpsIndex() < program.getOps().size()-1);
 
-        return context.getVariableValue(Variable.RESULT);
+        return program.getVariableValue(Variable.RESULT);
     }
 
-    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {context.AddSnap(vars, vals);}
+    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {program.AddSnap(vars, vals);}
 
 
-    @Override
-    public Map<Variable, Long> variableState() {
-        return null;
-    }
+
+
 }

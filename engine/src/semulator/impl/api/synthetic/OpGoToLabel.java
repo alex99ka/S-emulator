@@ -1,9 +1,8 @@
 package semulator.impl.api.synthetic;
-
-import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.Label;
+import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 public class OpGoToLabel extends AbstractOpBasic {
@@ -19,7 +18,7 @@ public class OpGoToLabel extends AbstractOpBasic {
     }
 
     @Override
-    public Label execute(ExecutionContextImpl executable) {
+    public Label execute(SProgram program) {
         return nextLabel;
     }
 }

@@ -1,24 +1,23 @@
 package semulator.impl.api.basic;
-
-import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
+import semulator.program.SProgram;
 import semulator.variable.Variable;
 import java.util.ArrayList;
 
 public class OpDecrease extends AbstractOpBasic {
     @Override
-    public Label execute(ExecutionContextImpl executable) {
-        Long variableValue = executable.getVariableValue(getVariable());
+    public Label execute(SProgram program) {
+        Long variableValue = program.getVariableValue(getVariable());
         variableValue = Math.max(0, variableValue - 1);
         ArrayList<Variable> vars = new ArrayList<>();
         ArrayList<Long> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(variableValue);
 
-        executable.AddSnap(vars,vals);
+        program.AddSnap(vars,vals);
 
         return FixedLabel.EMPTY;
     }

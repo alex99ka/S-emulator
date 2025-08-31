@@ -1,10 +1,9 @@
 package semulator.impl.api.basic;
-
-import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
+import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 public class OpNeutral extends AbstractOpBasic {
@@ -17,7 +16,7 @@ public class OpNeutral extends AbstractOpBasic {
     }
 
     @Override
-    public Label execute(ExecutionContextImpl executable) {
+    public Label execute(SProgram program) {
         return FixedLabel.EMPTY;
     }
 }

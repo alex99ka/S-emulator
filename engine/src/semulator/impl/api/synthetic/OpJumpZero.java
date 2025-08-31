@@ -1,10 +1,9 @@
 package semulator.impl.api.synthetic;
-
-import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
+import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 public class OpJumpZero extends AbstractOpBasic {
@@ -20,7 +19,7 @@ public class OpJumpZero extends AbstractOpBasic {
     }
 
     @Override
-    public Label execute(ExecutionContextImpl executable) {
-        return executable.getVariableValue(getVariable()) == 0L ? JZlabel: FixedLabel.EMPTY;
+    public Label execute(SProgram program) {
+        return program.getVariableValue(getVariable()) == 0L ? JZlabel: FixedLabel.EMPTY;
     }
 }

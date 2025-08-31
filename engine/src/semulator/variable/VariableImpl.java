@@ -20,7 +20,7 @@ public class VariableImpl implements Variable {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() {//implement hashcode based on variable representation}
         return Objects.hash(getRepresntation());
     }
     @Override

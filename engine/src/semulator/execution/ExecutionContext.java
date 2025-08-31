@@ -1,5 +1,4 @@
 package semulator.execution;
-import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;

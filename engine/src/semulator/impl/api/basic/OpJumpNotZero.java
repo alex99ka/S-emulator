@@ -1,14 +1,14 @@
 package semulator.impl.api.basic;
-
-
-import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
+import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 public class OpJumpNotZero extends AbstractOpBasic {
+    private final Label jnzLabel;
+
     public OpJumpNotZero(Variable variable, Label jnzLabel) {
         this(variable, jnzLabel, FixedLabel.EMPTY);
     }
@@ -18,12 +18,11 @@ public class OpJumpNotZero extends AbstractOpBasic {
         this.jnzLabel = jnzLabel;
     }
 
-    private final Label jnzLabel;
 
 
     @Override
-    public Label execute(ExecutionContextImpl executable) {
-        long variableValue = executable.getVariableValue(getVariable());
+    public Label execute(SProgram program) {
+        Long variableValue = program.getVariableValue(getVariable());
         if (variableValue != 0) {
             return jnzLabel;
         }

@@ -1,10 +1,10 @@
 package semulator.impl.api.synthetic;
 
-import semulator.execution.ExecutionContextImpl;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
+import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 import java.util.ArrayList;
@@ -22,13 +22,13 @@ public class OpAssignment extends AbstractOpBasic {
     }
 
     @Override
-    public Label execute(ExecutionContextImpl executable) {
-        Long variableValue = executable.getVariableValue(outSideVar);
+    public Label execute(SProgram program) {
+        Long variableValue = program.getVariableValue(outSideVar);
         ArrayList<Variable> vars = new ArrayList<>();
         ArrayList<Long> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(variableValue);
-        executable.AddSnap(vars,vals);
+        program.AddSnap(vars,vals);
 
         return FixedLabel.EMPTY;
     }
