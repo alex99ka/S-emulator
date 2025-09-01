@@ -1,5 +1,7 @@
 package semulator.program;
 
+import semulator.execution.ExecutionContext;
+import semulator.execution.ExpandContext;
 import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;
@@ -33,7 +35,7 @@ public interface SProgram
     void ChangeOpIndex(Op currentOp);
     int getOpsIndex();
     void setInputVars(List<Variable> vars);
-    void setInputVars(Set<Variable> inputVars);
+    void setAllVars(Set<Variable> inputVars);
     Set<Variable> getAllVars();
     void addLabel(Label label, Op op);
     SProgram myClone();
@@ -43,7 +45,5 @@ public interface SProgram
     void print();
      Map<Variable, Long> getCurrSnap();
      List<Long> getInputFromUser();
-
-
-
+     void SetContext(ExecutionContext context);
 }

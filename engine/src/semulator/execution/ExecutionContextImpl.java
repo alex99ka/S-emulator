@@ -19,7 +19,17 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     private ArrayList<Map<Variable, Long>> snapshots = null; // to turn off the comment
     public Map<Variable, Long> CurrSnap;
     public Map<Label, Op> labelMap;
+
+    public int getLabelindex() {
+        return labelindex;
+    }
+
     private int labelindex = 1;
+
+    public int getWorkVarIndex() {
+        return workVarIndex;
+    }
+
     private int workVarIndex = 1;
 
 
@@ -30,6 +40,16 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
             if (op.getLabel() != FixedLabel.EMPTY) // we don't want to add empty labels to the map
                 labelMap.put(op.getLabel(), op);
         }
+    }
+    //create a deep copy constructor
+    public ExecutionContextImpl(ExecutionContext context) {
+        //create a deep copy constructor
+        snapshots = new ArrayList<>(context.getSnapshots());
+        CurrSnap = new HashMap<>(context.getCurrSnap());
+        labelMap = new HashMap<>(context.getLabelMap());
+        labelindex = getLabelindex();
+        workVarIndex = getWorkVarIndex();
+
     }
     public Map<Variable, Long> getCurrSnap()
     {

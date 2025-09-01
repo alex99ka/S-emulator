@@ -23,12 +23,11 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         while (current != null) {
             Label next = current.execute(program);
 
-            if (next == FixedLabel.EXIT) {
+            if (next.equals(FixedLabel.EXIT)) {
                 break;
-            } else if (next == FixedLabel.EMPTY || next == null) {
+            } else if (next.equals( FixedLabel.EMPTY )) {
                 current = program.getNextOp();
             } else {
-                // קפיצה לתווית:
                 Op target = program.getOpByLabel(next);
                 if (target == null) {
                     throw new IllegalStateException(
@@ -54,11 +53,10 @@ public class ProgramExecutorImpl implements ProgramExecutor {
                 System.out.println(entry.getKey().getRepresentation() + " = " + entry.getValue());
             }
         }
-        System.out.println("the program ran for: " + program.calculateCycles());
+        System.out.println("the program ran for: " + program.calculateCycles() + "cycles");
 
 
 
-        // 6) מחזירים את y
         return program.getVariableValue(Variable.RESULT);
     }
 

@@ -263,7 +263,7 @@ public class Factory
         //sort input vars by there get representation method
         inputVars.sort(Comparator.comparing(Variable::getRepresentation));
             program.setInputVars(inputVars);
-            program.setInputVars(allVars);
+            program.setAllVars(allVars);
             return program;
         }
 

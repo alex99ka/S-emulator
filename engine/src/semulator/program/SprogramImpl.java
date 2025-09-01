@@ -1,6 +1,8 @@
 package semulator.program;
 
+import semulator.execution.ExecutionContext;
 import semulator.execution.ExecutionContextImpl;
+import semulator.execution.ExpandContext;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
 import semulator.impl.api.skeleton.OpType;
@@ -32,7 +34,7 @@ public class SprogramImpl implements SProgram {
         inputVars = new ArrayList<>();
     }
 
-    public void setInputVars(Set<Variable> inputVars)
+    public void setAllVars(Set<Variable> inputVars)
     {
         variables.addAll( inputVars);
     }
@@ -103,8 +105,10 @@ public class SprogramImpl implements SProgram {
     public void ChangeOpIndex(Op currentOp) {
       if (currentOp==null)
             throw(new IllegalArgumentException("the op is null"));
-      else if(opList.contains(currentOp))
-        OpListindex = opList.indexOf(currentOp);
+      else if (opList.stream().anyMatch(op -> op.getRepresentation().equals(currentOp.getRepresentation())))
+          OpListindex = opList.indexOf(opList.stream()
+                  .filter(op -> op.getRepresentation().equals(currentOp.getRepresentation()))
+                  .findFirst().get());
       else
           throw(new IllegalArgumentException("the op is not in the program"));
     }
@@ -128,7 +132,8 @@ public class SprogramImpl implements SProgram {
             newProgram.addOp((Op) op.myClone()); // Assuming Op is immutable or properly cloned
         }
         newProgram.setInputVars(new ArrayList<>(this.inputVars));
-        newProgram.setInputVars(new HashSet<>(this.variables));
+        newProgram.setAllVars(new HashSet<>(this.variables));
+        newProgram.SetContext(context);
         return newProgram;
     }
     @Override
@@ -244,6 +249,11 @@ public class SprogramImpl implements SProgram {
         } catch (NumberFormatException e) {}
     }
         return numbers;
+    }
+
+    @Override
+    public void SetContext(ExecutionContext context) {
+        this.context = new ExecutionContextImpl(context);
     }
 
 
