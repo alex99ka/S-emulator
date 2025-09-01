@@ -51,60 +51,83 @@ public class OpConstantAssigment extends AbstractOpBasic  {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        List<Op> myInstructions = new ArrayList<>();
+        List<Op> ops = new ArrayList<>();
 
         switch (extensionLevel) {
-            case 0:
+            case 0: {
+                // בלי הרחבה
                 return List.of(this);
+            }
             case 1: {
                 Variable v = getVariable();
+                long K = constant;  // הקבוע
                 Variable z1 = program.newWorkVar();
-                program.AddSnap(new ArrayList<>(Arrays.asList(z1)), new ArrayList<>(Arrays.asList(constant)));
-                Label loopLabel = program.newUniqueLabel();
-                Label afterLoopLabel = program.newUniqueLabel();
-                Op instr1 = new OpZeroVariable(v, getLabel());
-                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY))
-                    program.addLabel(getLabel(), instr1);
-                Op instr2 = new OpJumpZero(z1, afterLoopLabel);
-                Op instr3 = new OpIncrease(v, loopLabel);
-                program.addLabel(loopLabel, instr3);
-                Op instr4 = new OpDecrease(z1);
-                Op instr5 = new OpJumpNotZero(z1, loopLabel);
-                Op instr6 = new OpNeutral(v, afterLoopLabel);
-                program.addLabel(afterLoopLabel, instr6);
-                myInstructions.addAll(Arrays.asList(instr1, instr2, instr3, instr4, instr5, instr6));
-                break;
+                Label loop = program.newUniqueLabel();
+                Label after = program.newUniqueLabel();
+
+                Op zeroV = new OpZeroVariable(v, getLabel());
+                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
+                    program.addLabel(getLabel(), zeroV);
+                }
+                ops.add(zeroV);
+
+                for (long i = 0; i < K; i++) {
+                    ops.add(new OpIncrease(z1));
                 }
 
-                default: {
-                    Variable v = getVariable();
-                    Variable z1 = program.newWorkVar();
-                    Label loopLabel = program.newUniqueLabel();
-                    Label afterLoopLabel = program.newUniqueLabel();
-                    List<Op> zeroVariableExpanded = new OpZeroVariable(v, getLabel()).expand(extensionLevel - 1, program);
-                    Op instr1 = new OpNeutral(v, getLabel());
-                    if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY))
-                        program.addLabel(getLabel(), instr1);
-                    List<Op> JumpZeroExpanded = (ArrayList<Op>) new OpJumpZero(z1, afterLoopLabel).expand
-                    (extensionLevel - 1, program);
-                    Op instr3 = new OpIncrease(v, loopLabel);
-                    program.addLabel(loopLabel, instr3);
-                    Op instr4 = new OpDecrease(z1);
-                    Op instr5 = new OpJumpNotZero(z1, loopLabel);
-                    Op instr6 = new OpNeutral(v, afterLoopLabel);
-                    program.addLabel(afterLoopLabel, instr6);
-                    myInstructions.add(instr1);
-                    myInstructions.addAll(zeroVariableExpanded);
-                    myInstructions.addAll(JumpZeroExpanded);
-                    myInstructions.add(instr3);
-                    myInstructions.add(instr4);
-                    myInstructions.add(instr5);
-                    myInstructions.add(instr6);
-                    break;
+                Op jz = new OpJumpZero(z1, after);
+                ops.add(jz);
+                // z1->v loop
+                Op decZ1 = new OpDecrease(z1, loop);
+                program.addLabel(loop, decZ1);
+                ops.add(decZ1);
+
+                ops.add(new OpIncrease(v));
+                ops.add(new OpJumpNotZero(z1, loop));
+                //end of loop
+                Op end = new OpNeutral(v, after);
+                program.addLabel(after, end);
+                ops.add(end);
+
+                return ops;
+            }
+
+            default: { // 2 or higher
+                Variable v = getVariable();
+                long K = constant;
+                Variable z1  = program.newWorkVar();
+                Label loop = program.newUniqueLabel();
+                Label after = program.newUniqueLabel();
+
+                Op zeroV = new OpZeroVariable(v, getLabel());
+                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
+                    program.addLabel(getLabel(), zeroV);
                 }
+                ops.addAll(zeroV.expand(extensionLevel - 1, program));
+
+                for (long i = 0; i < K; i++) {
+                    ops.add(new OpIncrease(z1));
+                }
+
+                Op jz = new OpJumpZero(z1, after);
+                ops.addAll(jz.expand(extensionLevel - 1, program));
+
+                Op decZ1 = new OpDecrease(z1, loop);
+                program.addLabel(loop, decZ1);
+                ops.add(decZ1);
+
+                ops.add(new OpIncrease(v));
+                ops.add(new OpJumpNotZero(z1, loop)); // בסיסי
+
+                Op end = new OpNeutral(v, after);
+                program.addLabel(after, end);
+                ops.add(end);
+
+                return ops;
             }
-            return myInstructions;
-            }
+        }
+    }
+
 
 }
 

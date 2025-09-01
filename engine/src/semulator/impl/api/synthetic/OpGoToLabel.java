@@ -37,24 +37,30 @@ public class OpGoToLabel extends AbstractOpBasic {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        List<Op> myInstructions = new ArrayList<>();
+        List<Op> ops = new ArrayList<>();
 
         switch (extensionLevel) {
-            case 0:
+            case 0: {
+                // ללא הרחבה
                 return List.of(this);
+            }
             default: {
-                Variable tempVar1 = program.newWorkVar();
-                Op instr2 = new OpIncrease(tempVar1, getLabel());
+                Variable tmp = program.newWorkVar();
+                Op inc = new OpIncrease(tmp, getLabel());
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
-                    program.addLabel(getLabel(), instr2);
+                    program.addLabel(getLabel(), inc);
                 }
-                Op instr3 = new OpJumpNotZero(tempVar1, nextLabel);
-                myInstructions.add(instr2);
-                myInstructions.add(instr3);
-                return myInstructions;
+
+                Label target = nextLabel;
+                Op jnz = new OpJumpNotZero(tmp, target);
+
+                ops.add(inc);
+                ops.add(jnz);
+                return ops;
             }
         }
     }
+
 
     @Override
     public String getRepresentation()

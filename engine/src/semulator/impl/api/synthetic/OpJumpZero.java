@@ -37,47 +37,54 @@ public class OpJumpZero extends AbstractOpBasic  {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        List<Op> myInstructions = new ArrayList<>();
+        List<Op> ops = new ArrayList<>();
 
         switch (extensionLevel) {
-            case 0:
+            case 0: {
                 return List.of(this);
-            case 1: {
-                Label label1 = program.newUniqueLabel();
-
-                Op instr1 = new OpJumpNotZero(getVariable(), label1, getLabel());
-                if(getLabel() != null && getLabel() != FixedLabel.EMPTY) {
-                    program.addLabel(getLabel(),instr1);
-                }
-                Op instr2 = new OpGoToLabel(getVariable(), JZlabel);
-                Op instr3 = new OpNeutral(getVariable(), label1);
-
-                myInstructions.add(instr1);
-                myInstructions.add(instr2);
-                myInstructions.add(instr3);
-                return myInstructions;
             }
-            default: {
-                Label label1 = program.newUniqueLabel();
+            case 1: {
+                Label skip = program.newUniqueLabel();
 
-                Op instr1 = new OpJumpNotZero(getVariable(), label1, getLabel());
-                if(getLabel() != null && getLabel() != FixedLabel.EMPTY) {
-                    program.addLabel(getLabel(),instr1);
+                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel());
+                if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
+                    program.addLabel(getLabel(), jnz);
                 }
-                Op instr2 = new OpGoToLabel(getVariable(), JZlabel);
-                List<Op> instr = instr2.expand(1, program);
 
-                Op instr3 = new OpNeutral(getVariable(), label1);
+                Variable dummy = program.newWorkVar();
+                Op go = new OpGoToLabel(dummy, JZlabel);
 
-                myInstructions.add(instr1);
-                myInstructions.addAll(instr);
+                Op anchor = new OpNeutral(getVariable(), skip);
+                program.addLabel(skip, anchor);
 
-                myInstructions.add(instr3);
+                ops.add(jnz);
+                ops.add(go);
+                ops.add(anchor);
+                return ops;
+            }
 
-                return myInstructions;
+            default: {
+                Label skip = program.newUniqueLabel();
+
+                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel());
+                if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
+                    program.addLabel(getLabel(), jnz);
+                }
+                ops.add(jnz);
+
+                Variable dummy = program.newWorkVar();
+                Op go = new OpGoToLabel(dummy, JZlabel);
+                ops.addAll(go.expand(1, program));
+
+                Op anchor = new OpNeutral(getVariable(), skip);
+                program.addLabel(skip, anchor);
+                ops.add(anchor);
+
+                return ops;
             }
         }
     }
+
 
     @Override
     public String getRepresentation() {

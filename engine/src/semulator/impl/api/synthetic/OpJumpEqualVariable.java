@@ -17,13 +17,13 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
     Variable comparableVariable;
     Label JEConstantLabel;
 
-    public OpJumpEqualVariable(Variable variable,Label JEConstantLabel, Variable comparableVariable) {
+    public OpJumpEqualVariable(Variable variable, Label JEConstantLabel, Variable comparableVariable) {
         super(OpData.JUMP_EQUAL_VARIABLE, variable);
         this.JEConstantLabel = JEConstantLabel;
         this.comparableVariable = comparableVariable;
     }
 
-    public OpJumpEqualVariable (Variable variable, Label label, Label JEConstantLabel, Variable comparableVariable) {
+    public OpJumpEqualVariable(Variable variable, Label label, Label JEConstantLabel, Variable comparableVariable) {
         super(OpData.JUMP_EQUAL_VARIABLE, variable, label);
         this.JEConstantLabel = JEConstantLabel;
         this.comparableVariable = comparableVariable;
@@ -32,8 +32,9 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
     @Override
     public Label execute(SProgram program) {
         program.increaseCycleCounter(getCycles());
-        return program.getVariableValue(getVariable()).equals( program.getVariableValue(comparableVariable))? JEConstantLabel : FixedLabel.EMPTY;
+        return program.getVariableValue(getVariable()).equals(program.getVariableValue(comparableVariable)) ? JEConstantLabel : FixedLabel.EMPTY;
     }
+
     //implementation of deep clone
     @Override
     public OpJumpEqualVariable myClone() {
@@ -43,146 +44,132 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        List<Op> myInstructions = new ArrayList<>();
-
         switch (extensionLevel) {
-            case 0:
+            case 0: {
+                // לא מבצעים שום הרחבה
                 return List.of(this);
+            }
+
             case 1: {
-                Label label1 = program.newUniqueLabel();
-                Label label2 = program.newUniqueLabel();
-                Label label3 = program.newUniqueLabel();
+                List<Op> ops = new ArrayList<>();
+
+                Label Lstart    = program.newUniqueLabel();
+                Label LcheckZ2  = program.newUniqueLabel();
+                Label LnotEqual = program.newUniqueLabel();
                 Variable z1 = program.newWorkVar();
                 Variable z2 = program.newWorkVar();
 
-                Label jnzLabel = JEConstantLabel;
-                Variable vTag = comparableVariable;
-                Variable v = this.getVariable();
+                Label targetLabel = JEConstantLabel;
+                Variable v    = this.getVariable();
+                Variable vTag = this.comparableVariable;
 
+                Op a1 = new OpAssignment(z1, getLabel(), v);
+                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
+                    program.addLabel(getLabel(), a1);
+                }
+                Op a2 = new OpAssignment(z2, vTag);
 
-                Op instr2 = new OpAssignment(z1, getLabel(),v);
-                if(getLabel() != null && !getLabel().equals(FixedLabel.EMPTY))
-                    program.addLabel(getLabel(), instr2);
-                Op instr3 = new OpAssignment(z2, vTag);
-                Op instr4 = new OpJumpZero(z1, label3, label2);
-                Op instr5 = new OpJumpZero(z2, label3);
-                Op instr6 = new OpDecrease(z1);
-                Op instr7 = new OpDecrease(z2);
-                Op instr8 = new OpGoToLabel(z1, jnzLabel);
-                Op instr9 = new OpJumpZero(z2, label1);
-                Op instr10 = new OpNeutral(v);
+                Op anchorStart = new OpNeutral(v,Lstart);
+                program.addLabel(Lstart, anchorStart);
 
+                Op jz1 = new OpJumpZero(z1, LcheckZ2);
+                Op jz2 = new OpJumpZero(z2, LnotEqual);
 
-                myInstructions.add(instr2);
-                myInstructions.add(instr3);
-                myInstructions.add(instr4);
-                myInstructions.add(instr5);
-                myInstructions.add(instr6);
-                myInstructions.add(instr7);
-                myInstructions.add(instr8);
-                myInstructions.add(instr9);
-                myInstructions.add(instr10);
+                Op d1 = new OpDecrease(z1);
+                Op d2 = new OpDecrease(z2);
 
-                return myInstructions;
+                Op goStart = new OpGoToLabel(program.newWorkVar(), Lstart); //loop untill someone is 0
+
+                Op anchorCheck = new OpNeutral(v,LcheckZ2);
+                program.addLabel(LcheckZ2, anchorCheck);
+
+                Op jzEqual = new OpJumpZero(z2, targetLabel);
+
+                Op anchorNotEq = new OpNeutral(v,LnotEqual);
+                program.addLabel(LnotEqual, anchorNotEq);
+
+                ops.add(a1);
+                ops.add(a2);
+                ops.add(anchorStart);
+                ops.add(jz1);
+                ops.add(jz2);
+                ops.add(d1);
+                ops.add(d2);
+                ops.add(goStart);
+                ops.add(anchorCheck);
+                ops.add(jzEqual);
+                ops.add(anchorNotEq);
+
+                return ops;
             }
-            case 2: {
-                Label label1 = program.newUniqueLabel();
-                Label label2 = program.newUniqueLabel();
-                Label label3 = program.newUniqueLabel();
-                Variable z1 = program.newWorkVar();
-                Variable z2 = program.newWorkVar();
 
-                Label jnzLabel = JEConstantLabel;
-                Variable vTag = comparableVariable;
-                Variable v = this.getVariable();
-
-
-                Op instr2 = new OpAssignment(z1, getLabel(),v);
-                List<Op> assignExt1 = instr2.expand(1, program);
-
-                Op instr3 = new OpAssignment(z2, vTag);
-                List<Op> assignExt2 = instr3.expand(1, program);
-
-                Op instr4 = new OpJumpZero(z1, label3, label2);
-                List<Op> jumpZerExt1 = instr4.expand(1, program);
-
-                Op instr5 = new OpJumpZero(z2, label3);
-                List<Op> jumpZerExt2 = instr5.expand(1, program);
-
-                Op instr6 = new OpDecrease(z1);
-                Op instr7 = new OpDecrease(z2);
-                Op instr8 = new OpGoToLabel(z1, jnzLabel);
-                List<Op> gotoExt1 = instr8.expand(1, program);
-
-                Op instr9 = new OpJumpZero(z2, label1);
-                List<Op> jumpZerExt3 = instr9.expand(1, program);
-
-                Op instr10 = new OpNeutral(v);
-
-
-                myInstructions.addAll(assignExt1);
-                myInstructions.addAll(assignExt2);
-                myInstructions.addAll(jumpZerExt1);
-                myInstructions.addAll(jumpZerExt2);
-                myInstructions.add(instr6);
-                myInstructions.add(instr7);
-                myInstructions.addAll(gotoExt1);
-                myInstructions.addAll(jumpZerExt3);
-                myInstructions.add(instr10);
-
-                return myInstructions;
-            }
             default: {
-                Label label1 = program.newUniqueLabel();
-                Label label2 = program.newUniqueLabel();
-                Label label3 = program.newUniqueLabel();
+                List<Op> ops = new ArrayList<>();
+
+                Label Lstart    = program.newUniqueLabel();
+                Label LcheckZ2  = program.newUniqueLabel();
+                Label LnotEqual = program.newUniqueLabel();
                 Variable z1 = program.newWorkVar();
                 Variable z2 = program.newWorkVar();
 
-                Label jnzLabel = JEConstantLabel;
-                Variable vTag = comparableVariable;
-                Variable v = this.getVariable();
+                Label targetLabel = JEConstantLabel;
+                Variable v    = this.getVariable();
+                Variable vTag = this.comparableVariable;
 
+                Op a1 = new OpAssignment(z1, getLabel(), v);
+                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
+                    program.addLabel(getLabel(), a1);
+                }
+                List<Op> assign1 = a1.expand(1, program);
 
-                Op instr2 = new OpAssignment(z1, getLabel(),v);
-                List<Op> assignExt1 = instr2.expand(1, program);
+                Op a2 = new OpAssignment(z2, vTag);
+                List<Op> assign2 = a2.expand(1, program);
 
-                Op instr3 = new OpAssignment(z2, vTag);
-                List<Op> assignExt2 = instr3.expand(1, program);
+                Op anchorStart = new OpNeutral(v);
+                program.addLabel(Lstart, anchorStart);
 
-                Op instr4 = new OpJumpZero(z1, label3, label2);
-                List<Op> jumpZerExt1 = instr4.expand(1, program);
+                Op jz1 = new OpJumpZero(z1, LcheckZ2);
+                List<Op> jz1ext = jz1.expand(1, program);
 
-                Op instr5 = new OpJumpZero(z2, label3);
-                List<Op> jumpZerExt2 = instr5.expand(1, program);
+                Op jz2 = new OpJumpZero(z2, LnotEqual);
+                List<Op> jz2ext = jz2.expand(1, program);
 
-                Op instr6 = new OpDecrease(z1);
-                Op instr7 = new OpDecrease(z2);
-                Op instr8 = new OpGoToLabel(z1, jnzLabel);
-                List<Op> gotoExt1 = instr8.expand(1, program);
+                Op d1 = new OpDecrease(z1);
+                Op d2 = new OpDecrease(z2);
 
-                Op instr9 = new OpJumpZero(z2, label1);
-                List<Op> jumpZerExt3 = instr9.expand(2, program);
+                Op goStart = new OpGoToLabel(program.newWorkVar(), Lstart);
+                List<Op> goExt = goStart.expand(1, program);
 
-                Op instr10 = new OpNeutral(v);
+                Op anchorCheck = new OpNeutral(v);
+                program.addLabel(LcheckZ2, anchorCheck);
 
-                myInstructions.addAll(assignExt1);
-                myInstructions.addAll(assignExt2);
-                myInstructions.addAll(jumpZerExt1);
-                myInstructions.addAll(jumpZerExt2);
-                myInstructions.add(instr6);
-                myInstructions.add(instr7);
-                myInstructions.addAll(gotoExt1);
-                myInstructions.addAll(jumpZerExt3);
-                myInstructions.add(instr10);
+                Op jzEqual = new OpJumpZero(z2, targetLabel);
+                List<Op> jzEqExt = jzEqual.expand(1, program);
 
-                return myInstructions;
+                Op anchorNotEq = new OpNeutral(v);
+                program.addLabel(LnotEqual, anchorNotEq);
+
+                ops.addAll(assign1);
+                ops.addAll(assign2);
+                ops.add(anchorStart);
+                ops.addAll(jz1ext);
+                ops.addAll(jz2ext);
+                ops.add(d1);
+                ops.add(d2);
+                ops.addAll(goExt);
+                ops.add(anchorCheck);
+                ops.addAll(jzEqExt);
+                ops.add(anchorNotEq);
+
+                return ops;
             }
         }
     }
 
-    @Override
-    public String getRepresentation() {
+
+
+            @Override
+        public String getRepresentation() {
         return String.format("if %s = %s GOTO %s", getVariable().getRepresentation(), comparableVariable.getRepresentation(), JEConstantLabel.getLabelRepresentation());
     }
 }

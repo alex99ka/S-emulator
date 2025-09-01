@@ -51,99 +51,119 @@ public class OpAssignment extends AbstractOpBasic  {
         return String.format("%s ← %s", getVariable().getRepresentation(), outSideVar.getRepresentation());
     }
     @Override
-    public List<Op> expand(int extensionLevel,SProgram program) {
-        List<Op> myInstructions = new ArrayList<>();
+    public List<Op> expand(int extensionLevel, SProgram program) {
+        List<Op> ops = new ArrayList<>();
 
         switch (extensionLevel) {
-            case 0:
+            case 0: {
                 return List.of(this);
-            case 1: {
-                Label label1 = program.newUniqueLabel();
-                Label label2 = program.newUniqueLabel();
-                Label label3 = program.newUniqueLabel();
-                Variable v = this.getVariable();
-                Variable vTag = outSideVar;
-                Variable z1 = program.newWorkVar();
-                Op instr2 = new OpZeroVariable(v,getLabel());
-                if(getLabel() != null && getLabel() != FixedLabel.EMPTY){
-                    program.addLabel(getLabel(), instr2);
-                }
-                Op instr3 = new OpJumpNotZero(vTag,label1);
-                Op instr4 = new OpGoToLabel(vTag, label3);
-
-                Op instr5 = new OpDecrease( vTag,label1);
-                program.addLabel(label1, instr5 );
-                Op instr6 = new OpIncrease(z1);
-                Op instr7 = new OpJumpNotZero(vTag,label1);
-                Op instr8 = new OpDecrease(z1,label2);
-                program.addLabel(label2, instr8 );
-                Op instr9 = new OpIncrease(v);
-                Op instr10 = new OpIncrease(vTag);
-                Op instr11 = new OpJumpNotZero(z1,label2);
-                Op instr12 = new OpNeutral(v, label3);
-                program.addLabel(label3, instr12 );
-
-                myInstructions.add(instr2);
-                myInstructions.add(instr3);
-                myInstructions.add(instr4);
-                myInstructions.add(instr5);
-                myInstructions.add(instr6);
-                myInstructions.add(instr7);
-                myInstructions.add(instr8);
-                myInstructions.add(instr9);
-                myInstructions.add(instr10);
-                myInstructions.add(instr11);
-                myInstructions.add(instr12);
-                return myInstructions;
             }
-            default: {
+            case 1: {
+                Label label1 = program.newUniqueLabel(); //loop vTag ->z1
+                Label label2 = program.newUniqueLabel(); // z1 -> v
+                Label label3 = program.newUniqueLabel(); // final
+
+                Variable v    = this.getVariable();   //
+                Variable vTag = this.outSideVar;      //
+                Variable z1   = program.newWorkVar(); // dummy accumulator ()
+
+                Op zeroV = new OpZeroVariable(v, getLabel()); // clean v
+                if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
+                    program.addLabel(getLabel(), zeroV);
+                }
+
+                // 2) אם vTag==0 → דלג לסוף (label3), אחרת היכנס ללולאה הראשונה
+                Op jnzVTagEnter = new OpJumpNotZero(vTag, label1);
+                Op gotoEnd = new OpGoToLabel(program.newWorkVar(), label3);
+
+                // 3) לולאה 1: כל עוד vTag!=0 → vTag--, z1++
+                Op decVTag_l1 = new OpDecrease(vTag, label1);
+                program.addLabel(label1, decVTag_l1);
+                Op incZ1      = new OpIncrease(z1);
+                Op backL1     = new OpJumpNotZero(vTag, label1);
+
+                // increase vtag and v together
+                Op decZ1_l2 = new OpDecrease(z1, label2);
+                program.addLabel(label2, decZ1_l2);
+                Op incV     = new OpIncrease(v);
+                Op incVTag  = new OpIncrease(vTag);
+                Op backL2   = new OpJumpNotZero(z1, label2);
+
+                Op endAnchor = new OpNeutral(v, label3);
+                program.addLabel(label3, endAnchor);
+
+                ops.add(zeroV);
+                ops.add(jnzVTagEnter);
+                ops.add(gotoEnd);
+                ops.add(decVTag_l1);
+                ops.add(incZ1);
+                ops.add(backL1);
+                ops.add(decZ1_l2);
+                ops.add(incV);
+                ops.add(incVTag);
+                ops.add(backL2);
+                ops.add(endAnchor);
+                return ops;
+            }
+
+            default: { // דרגה 2+
                 Label label1 = program.newUniqueLabel();
                 Label label2 = program.newUniqueLabel();
                 Label label3 = program.newUniqueLabel();
-                Variable v = this.getVariable();
-                Variable vTag = outSideVar;
-                Variable z1 = program.newWorkVar();
-                //Op instr1 = new OpNeutral(v, getLabel());
-                Op instr2 = new OpZeroVariable(v,getLabel());
-                if(getLabel() != null && getLabel() != FixedLabel.EMPTY){
-                    program.addLabel(getLabel(), instr2);
+
+                Variable v    = this.getVariable();
+                Variable vTag = this.outSideVar;
+                Variable z1   = program.newWorkVar();
+
+                // 1) אפס את v (מרחיב פנימה)
+                Op zeroV = new OpZeroVariable(v, getLabel());
+                if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
+                    program.addLabel(getLabel(), zeroV);
                 }
-                List<Op> zeroExtend = instr2.expand(1, program);
+                ops.addAll(zeroV.expand(1, program));
 
-                Op instr3 = new OpJumpNotZero(vTag,label1);
-                Op instr4 = new OpGoToLabel(vTag,label3);
-                List<Op> gotoExtend = instr4.expand(1, program);
+                // 2) אם vTag==0 → דלג לסוף, אחרת לולאה 1
+                Op jnzVTagEnter = new OpJumpNotZero(vTag, label1);
+                ops.add(jnzVTagEnter);
 
-                Op instr5 = new OpDecrease(vTag,label1);
-                program.addLabel(label1, instr5 );
-                Op instr6 = new OpIncrease(z1);
-                Op instr7 = new OpJumpNotZero(vTag,label1 );
-                Op instr8 = new OpDecrease(z1,label2 );
-                program.addLabel(label2, instr8 );
-                Op instr9 = new OpIncrease(v);
-                Op instr10 = new OpIncrease(vTag);
-                Op instr11 = new OpJumpNotZero(z1,label2);
-                Op instr12 = new OpNeutral(v, label3);
-                program.addLabel(label3, instr12 );
+                Op gotoEnd = new OpGoToLabel(program.newWorkVar(), label3);
+                ops.addAll(gotoEnd.expand(1, program)); // הרחבה של GOTO עם dummy
 
-                myInstructions.addAll(zeroExtend);
+                // 3) לולאה 1: כל עוד vTag!=0 → vTag--, z1++
+                Op decVTag_l1 = new OpDecrease(vTag, label1);
+                program.addLabel(label1, decVTag_l1);
+                ops.add(decVTag_l1);
 
-                myInstructions.add(instr3);
+                Op incZ1 = new OpIncrease(z1);
+                ops.add(incZ1);
 
-                myInstructions.addAll(gotoExtend);
+                Op backL1 = new OpJumpNotZero(vTag, label1);
+                ops.add(backL1);
 
-                myInstructions.add(instr5);
-                myInstructions.add(instr6);
-                myInstructions.add(instr7);
-                myInstructions.add(instr8);
-                myInstructions.add(instr9);
-                myInstructions.add(instr10);
-                myInstructions.add(instr11);
-                myInstructions.add(instr12);
-                return myInstructions;
+                // 4) לולאה 2: כל עוד z1!=0 → z1--, v++, vTag++
+                Op decZ1_l2 = new OpDecrease(z1, label2);
+                program.addLabel(label2, decZ1_l2);
+                ops.add(decZ1_l2);
+
+                Op incV = new OpIncrease(v);
+                ops.add(incV);
+
+                Op incVTag = new OpIncrease(vTag);
+                ops.add(incVTag);
+
+                Op backL2 = new OpJumpNotZero(z1, label2);
+                ops.add(backL2);
+
+                // 5) עוגן סוף
+                Op endAnchor = new OpNeutral(v, label3);
+                program.addLabel(label3, endAnchor);
+                ops.add(endAnchor);
+
+                return ops;
             }
         }
     }
+
 
 
 }

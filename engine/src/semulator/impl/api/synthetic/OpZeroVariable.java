@@ -42,23 +42,35 @@ public class OpZeroVariable extends AbstractOpBasic  {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        List<Op> myInstructions = new ArrayList<>();
+        List<Op> ops = new ArrayList<>();
 
         switch (extensionLevel) {
-            case 0:
+            case 0: {
+                // ללא הרחבה
                 return List.of(this);
+            }
+
             default: {
-                Label label = program.newUniqueLabel();
-                Op instr1 = new OpNeutral(getVariable(), getLabel());
-                Op instr2 = new OpDecrease(getVariable(), label);
-                Op instr3 = new OpJumpNotZero(getVariable(), label);
-                myInstructions.add(instr1);
-                myInstructions.add(instr2);
-                myInstructions.add(instr3);
-                return myInstructions;
+                Label loop = program.newUniqueLabel();
+
+                Op anchor = new OpNeutral(getVariable(), getLabel());
+                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
+                    program.addLabel(getLabel(), anchor);
+                }
+
+                Op dec = new OpDecrease(getVariable(), loop);
+                program.addLabel(loop, dec);
+
+                Op back = new OpJumpNotZero(getVariable(), loop);
+
+                ops.add(anchor);
+                ops.add(dec);
+                ops.add(back);
+                return ops;
             }
         }
     }
+
 
     @Override
     public String getRepresentation() {
