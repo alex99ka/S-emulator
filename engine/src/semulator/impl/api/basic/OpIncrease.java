@@ -1,5 +1,6 @@
 package semulator.impl.api.basic;
 import semulator.impl.api.skeleton.AbstractOpBasic;
+import semulator.impl.api.skeleton.Op;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
@@ -7,6 +8,7 @@ import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OpIncrease extends AbstractOpBasic {
     public OpIncrease(Variable variable) {
@@ -31,6 +33,10 @@ public class OpIncrease extends AbstractOpBasic {
         program.increaseCycleCounter(getCycles());
 
         return FixedLabel.EMPTY;
+    }
+    public List<Op> expand(int extensionLevel, SProgram program)
+    {
+        return List.of(this);
     }
     //implementation of deep clone
     @Override

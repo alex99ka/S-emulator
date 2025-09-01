@@ -138,6 +138,15 @@ public class SprogramImpl implements SProgram {
 
     public void increaseCycleCounter(int cycles) {this.cycles += cycles;}
 
+    @Override
+    public Label newUniqueLabel() {
+       return context.newUniqueLabel();
+    }
+    public Variable newWorkVar()
+    {
+        return context.newWorkVar();
+    }
+
     public void print()
     {
         int i;
@@ -202,34 +211,34 @@ public class SprogramImpl implements SProgram {
     public void deployToDegree(int degree)
     {
         for(int i=0;i<degree;i++) {
-            deploy();
+            //deploy();
         }
     }
 
-    public void deploy()
-    {
-        Set<Label> allprogramlabels = context.labelMap.keySet();
-        for(int i=0;i<instructions.size();i++){
-            AbstractInstruction currentInstruction = instructions.get(i);
-            if(currentInstruction instanceof SyntheticSugar)
-            {
-                AbstractInstruction source;
-                ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand(this.vars);
-                for(AbstractInstruction instruction:expandedInstructions){
-                    instruction.setPos(++programCounter); // Set position for each expanded instruction
-                }
-                source=instructions.remove(i);
-                expandedInstructions.forEach(instruction->instruction.setSyntheticSource(source));// Set the source for each expanded instruction
-                if(source.getLab() instanceof Label) {
-                    removeFirstLabelCollisions((Label) source.getLab(), expandedInstructions, allprogramlabels);
-                }
-                replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
-                instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
-                i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
-            }
+//    public void deploy()
+//    {
+//        Set<Label> allprogramlabels = context.labelMap.keySet();
+//        for(int i=0;i<instructions.size();i++){
+//            AbstractInstruction currentInstruction = instructions.get(i);
+//            if(currentInstruction instanceof SyntheticSugar)
+//            {
+//                AbstractInstruction source;
+//                ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand(this.vars);
+//                for(AbstractInstruction instruction:expandedInstructions){
+//                    instruction.setPos(++programCounter); // Set position for each expanded instruction
+//                }
+//                source=instructions.remove(i);
+//                expandedInstructions.forEach(instruction->instruction.setSyntheticSource(source));// Set the source for each expanded instruction
+//                if(source.getLab() instanceof Label) {
+//                    removeFirstLabelCollisions((Label) source.getLab(), expandedInstructions, allprogramlabels);
+//                }
+//                replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
+//                instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
+//                i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
+//            }
 
-        }
-    }
+        //}
+    //}
 
 
 }

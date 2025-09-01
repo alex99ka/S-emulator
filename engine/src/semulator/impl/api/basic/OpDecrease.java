@@ -1,5 +1,6 @@
 package semulator.impl.api.basic;
 import semulator.impl.api.skeleton.AbstractOpBasic;
+import semulator.impl.api.skeleton.Op;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
@@ -8,6 +9,7 @@ import semulator.variable.Variable;
 import semulator.variable.VariableImpl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OpDecrease extends AbstractOpBasic {
     @Override
@@ -43,4 +45,9 @@ public class OpDecrease extends AbstractOpBasic {
     public String getRepresentation() {
         return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
+    public List<Op> expand(int extensionLevel, SProgram program)
+    {
+        return List.of(this);
+    }
+
 }

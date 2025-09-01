@@ -24,7 +24,7 @@ public interface SProgram
 
     int calculateCycles();
     void increaseCycleCounter(int cycles);
-
+    public Label newUniqueLabel();
     Variable GetNextVar(int j);
     public void createFirstSnap(List<Long> input);
     int getAmountOfVars();
@@ -41,7 +41,8 @@ public interface SProgram
     SProgram myClone();
     int getProgramDegree();
     void deployToDegree(int degree);
-    void deploy();
+    //void deploy();
+    public Variable newWorkVar();
     void print();
 
 }
