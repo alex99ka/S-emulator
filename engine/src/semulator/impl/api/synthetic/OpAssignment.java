@@ -54,6 +54,7 @@ public class OpAssignment extends AbstractOpBasic  {
     public List<Op> expand(int extensionLevel, SProgram program) {
         List<Op> ops = new ArrayList<>();
 
+
         switch (extensionLevel) {
             case 0: {
                 return List.of(this);
@@ -66,6 +67,7 @@ public class OpAssignment extends AbstractOpBasic  {
                 Variable v    = this.getVariable();   //
                 Variable vTag = this.outSideVar;      //
                 Variable z1   = program.newWorkVar(); // dummy accumulator ()
+
 
                 Op zeroV = new OpZeroVariable(v, getLabel()); // clean v
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {

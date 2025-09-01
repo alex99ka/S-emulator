@@ -4,15 +4,13 @@ import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public interface SProgram
 {
     String getName();
     void addLabelSet(LinkedHashSet<Label> labels);
+
 
     void addOp(Op instruction);
 
@@ -40,9 +38,12 @@ public interface SProgram
     void addLabel(Label label, Op op);
     SProgram myClone();
     int getProgramDegree();
-    void deployToDegree(int degree);
-    //void deploy();
+    void expandProgram(int degree);
     public Variable newWorkVar();
     void print();
+     Map<Variable, Long> getCurrSnap();
+     List<Long> getInputFromUser();
+
+
 
 }

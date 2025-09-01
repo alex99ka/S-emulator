@@ -1,14 +1,16 @@
 package console;
 // import the program package from the engine module
 
+import semulator.execution.ProgramExecutor;
+import semulator.execution.ProgramExecutorImpl;
 import semulator.program.*;
 //import engine.Statistics;
 import semulator.input.XmlTranslator.Factory;
-import semulator.variable.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.Collection;
+
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -20,12 +22,14 @@ public class ConsoleUI {
         System.out.println("Welcome to S-Emulator IDE");
         boolean exit = false;
         File file;
+        String NPL = "No program loaded. Please load a program first.";
+        Scanner scanner = new Scanner(System.in);
 
         while (!exit) {
             Menu();
             int choice;
             try {
-                choice = new Scanner(System.in).nextInt();
+                choice = scanner.nextInt();
             } catch (Exception e) {
                 System.out.println("Invalid input. Please enter a number.");
                 continue;
@@ -34,7 +38,7 @@ public class ConsoleUI {
             switch (choice) {
                 case 1:
                     try {
-                        System.out.print("Enter XML file path: ");
+                        System.out.print("Enter XML full file path: ");
                         String filePath = new BufferedReader(new InputStreamReader(System.in)).readLine();
                         file = new File(filePath);
                         program = factory.loadProgramFromXml(file);
@@ -47,14 +51,14 @@ public class ConsoleUI {
                     break;
                 case 2:
                     if(program==null){
-                        System.out.println("No program loaded. Please load a program first.");
+                        System.out.println(NPL);
                         break;
                     }
                     program.print();
                     break;
                 case 3:
                     if(program==null){
-                        System.out.println("No program loaded. Please load a program first.");
+                        System.out.println(NPL);
                         break;
                     }
                     int expansionsAvailable = program.getProgramDegree();
@@ -64,22 +68,26 @@ public class ConsoleUI {
                             System.out.println("Enter expansion degree, Max is: " + expansionsAvailable);
                             expansionsRequested = new Scanner(System.in).nextInt();
                         } catch (Exception e) {
-                            System.out.println("Invalid input. Please enter a number.");
+                            System.out.println("Invalid input. Please enter a integer (number).");
                             expansionsRequested=-1;
                         }
                     } while(expansionsRequested <0 || expansionsRequested > expansionsAvailable);
+                    if (programCopy == null) {
+                        System.out.println("Program copy is not initialized. Please load a program first.");
+                        break;
+                    }
                     int diffDegrees=program.getProgramDegree()-programCopy.getProgramDegree();
 
                     if(expansionsRequested != diffDegrees){ // If the degree has changed, re-deploy the program
-                        programCopy= program.clone();
-                        programCopy.deployToDegree(expansionsRequested);
+                        programCopy= program.myClone();
+                        programCopy.expandProgram(expansionsRequested);
                     }
                     System.out.println("After Expansion: ");
-                    System.out.println(programCopy);
+                    programCopy.print();
                     break;
                 case 4:
                     if(program==null){
-                        System.out.println("No program loaded. Please load a program first.");
+                        System.out.println(NPL);
                         break;
                     }
                     int degree = program.getProgramDegree();
@@ -94,40 +102,32 @@ public class ConsoleUI {
                             continue;
                         }
                     } while(selectedDegree < 0  || selectedDegree > degree);
-
+                    if (programCopy == null) {
+                        System.out.println("Program copy is not initialized. Please load a program first.");
+                        break;
+                    }
                     diffDegrees=program.getProgramDegree()-programCopy.getProgramDegree();
                     if(selectedDegree != diffDegrees){ // If the degree has changed, re-deploy the program
                         programCopy= program.myClone();
-                        programCopy.deployToDegree(selectedDegree);
+                        programCopy.expandProgram(selectedDegree);
                     }
-                    Collection<Variable>initVars= programCopy.setUserInput();
-                    int y=programCopy.execute().getValue();
-                    int cycles= programCopy.getCycleCount();
-                    try {
-                        new Statistics(selectedDegree, initVars, cycles, y).appendStatistics();
-                    }catch (Exception e) {
-                        System.out.println("Error writing statistics: " + e.getMessage());
-                    }
-                    finally {
-                        System.out.println("After Execution: ");
-                        System.out.println(programCopy);
-                        System.out.println(programCopy.getVars());
-                        System.out.println("Total Cycles: " + cycles);
-                    }
-                    break;
-                case 5:
-                    try {
-                        Collection<Statistics> programStats = Statistics.loadStatisticsIndividually();
-                        for(Statistics stats: programStats){
-                            System.out.println(stats);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Error loading statistics: " + e.getMessage());
-                    }
-                    break;
+                    ProgramExecutor executor = new ProgramExecutorImpl(programCopy);
+
+                    List<Long> initVars= program.getInputFromUser();
+                    Long y= executor.run(initVars);
+//                case 5:
+//                    try {
+//                        Collection<Statistics> programStats = Statistics.loadStatisticsIndividually();
+//                        for(Statistics stats: programStats){
+//                            System.out.println(stats);
+//                        }
+//                    } catch (Exception e) {
+//                        System.out.println("Error loading statistics: " + e.getMessage());
+//                    }
+//                    break;
                 case 6:
                     exit = true;
-                    System.out.println("Exiting S-Emulator IDE. Goodbye!");
+                    System.out.println("Exiting S-Emulator IDE. Farewell!");
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");

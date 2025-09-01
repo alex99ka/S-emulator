@@ -1,6 +1,8 @@
 package semulator.execution;
+import semulator.program.SProgram;
+
 import java.util.List;
 
 public interface ProgramExecutor {
-    Long run(List<Long> input);
+    long run( List<Long> inputs);
 }

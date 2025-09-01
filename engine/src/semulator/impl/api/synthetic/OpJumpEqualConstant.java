@@ -12,7 +12,9 @@ import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class OpJumpEqualConstant extends AbstractOpBasic {
     Label JEConstantLabel;
@@ -43,7 +45,6 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
         List<Op> ops = new ArrayList<>();
-
         switch (extensionLevel) {
             case 0: {
                 return List.of(this);
@@ -77,11 +78,10 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
 
-                return ops;
             }
 
             case 2: {
-                Variable z1    = program.newWorkVar();
+                Variable z1 = program.newWorkVar();
                 Variable v     = getVariable();
                 long k         = constant;
                 Label target   = JEConstantLabel;
@@ -109,13 +109,12 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
 
-                return ops;
             }
 
             default: {
                 Variable z1    = program.newWorkVar();
                 Variable v     = getVariable();
-                long k         = constant;
+                long k  = constant;
                 Label target   = this.JEConstantLabel;
                 Label notEqLbl = program.newUniqueLabel();
 

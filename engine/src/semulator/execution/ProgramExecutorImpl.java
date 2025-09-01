@@ -5,8 +5,8 @@ import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 public class ProgramExecutorImpl implements ProgramExecutor {
     SProgram program;
@@ -14,64 +14,49 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         this.program = program;
     }
      // the 4th command!
-    public Long run(List<Long> input) {
-        program.createFirstSnap(input);
-        Op currentOp = program.getNextOp();
-        Label nextLabel;
-        do {
-            nextLabel = currentOp.execute(program);
-            if(nextLabel.equals(FixedLabel.EXIT))
-                 break;
-            else if (nextLabel.equals(FixedLabel.EMPTY))
-                currentOp = program.getNextOp();
-             else {
-                currentOp = program.getOpByLabel(nextLabel);
-                program.ChangeOpIndex(currentOp);
-            }
 
 
-        } while (program.getOpsIndex() < program.getOps().size()-1);
+    public long run(List<Long> inputs) {
+        program.createFirstSnap(inputs);  // enter the vals from the user to the input vars
 
-        return program.getVariableValue(Variable.RESULT);
-    }
-
-    public long run(SProgram originalProgram, int degree, List<Long> inputs) {
-        // 2) הרחבה לדרגה שנבחרה
-        program.deployToDegree(degree);
-
-        program.createFirstSnap(inputs);
-
-        // 4) ריצה בלולאה
-        Op current = program.getNextOp(); // מתחיל מה-op הראשון
+        Op current = program.getNextOp();
         while (current != null) {
-            Label next = current.execute(program); // ההוראה תחזיר label לזרימה הבאה
+            Label next = current.execute(program);
 
             if (next == FixedLabel.EXIT) {
-                break; // סיום תקין
+                break;
             } else if (next == FixedLabel.EMPTY || next == null) {
-                current = program.getNextOp(); // המשך רציף
+                current = program.getNextOp();
             } else {
                 // קפיצה לתווית:
-                Op target = program.getOpByLabel(next.getLabelRepresentation());
+                Op target = program.getOpByLabel(next);
                 if (target == null) {
                     throw new IllegalStateException(
                             "Jump to undefined label: " + next.getLabelRepresentation());
                 }
-                program.changeOpIndexTo(target);   // מציב את האינדקס על היעד
+                program.ChangeOpIndex(target);   // מציב את האינדקס על היעד
                 current = target;
             }
-
-            // הגנה – אם עברנו את סוף הרשימה, עצור
+            // stop at the end of the opList
             if (program.getOpsIndex() >= program.getOps().size()) {
                 break;
             }
         }
 
-        // 5) הדפסות לפי דרישות התרגיל
-        System.out.println("After Execution:");
-        System.out.println(program); // toString/print של התוכנית לאחר הרחבה
-        System.out.println(program.formatFinalVars()); // ייבנה בסעיף 3 למטה
-        System.out.println("Total Cycles: " + program.getCycleCount()); // סה״כ cycles
+        program.print();
+        System.out.println("the result of the program you ran is: " + program.getVariableValue(Variable.RESULT));
+        TreeMap<Variable, Long> treeMap = new TreeMap<>(
+                Comparator.comparing(Variable::getRepresentation)
+        );
+        treeMap.putAll(program.getCurrSnap());
+        for (Map.Entry<Variable, Long> entry : treeMap.entrySet()) {
+            if (!entry.getKey().equals(Variable.RESULT)) {
+                System.out.println(entry.getKey().getRepresentation() + " = " + entry.getValue());
+            }
+        }
+        System.out.println("the program ran for: " + program.calculateCycles());
+
+
 
         // 6) מחזירים את y
         return program.getVariableValue(Variable.RESULT);

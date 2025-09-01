@@ -12,7 +12,7 @@ import java.util.*;
 
 public class SprogramImpl implements SProgram {
     private final String name;
-    private final List<Op> opList;
+    private  List<Op> opList;
     private int cycles;
     private int OpListindex;
     private List<Variable> inputVars;
@@ -34,7 +34,7 @@ public class SprogramImpl implements SProgram {
 
     public void setInputVars(Set<Variable> inputVars)
     {
-        this.variables = inputVars;
+        variables.addAll( inputVars);
     }
     public Set<Variable> getAllVars()
     {
@@ -56,8 +56,8 @@ public class SprogramImpl implements SProgram {
         return OpListindex;
     }
     @Override
-    public Variable GetNextVar(int j) {
-        return inputVars.get(j);
+    public Variable GetNextVar(int i) {
+        return inputVars.get(i);
     }
 
     @Override
@@ -144,7 +144,9 @@ public class SprogramImpl implements SProgram {
     }
     public Variable newWorkVar()
     {
-        return context.newWorkVar();
+        Variable tmp = context.newWorkVar();
+        variables.add(tmp);
+        return tmp;
     }
 
     public void print()
@@ -167,8 +169,12 @@ public class SprogramImpl implements SProgram {
             else
                 type = "B";
 
-            label = currentOp.getLabel().getLabelRepresentation();
-            opRep= currentOp.getRepresentation();
+            if (currentOp.getLabel() != null) {
+                label = currentOp.getLabel().getLabelRepresentation();
+            } else {
+                label = ""; // if there is no label print empty spaces
+            }
+            opRep = currentOp.getRepresentation();
             cycles= String.valueOf(currentOp.getCycles());
             res.add(String.format("#%d (%s) [%5s] <%s> (%s)", i, type, label, opRep, cycles));
         }
@@ -208,37 +214,40 @@ public class SprogramImpl implements SProgram {
         return maxDegree;
     }
 
-    public void deployToDegree(int degree)
+    public void expandProgram(int degree)
     {
-        for(int i=0;i<degree;i++) {
-            //deploy();
+        List<Op> expandedList = new  ArrayList<>();
+        for (Op op: opList) {
+            expandedList.addAll(op.expand(degree,this));
         }
+        opList = expandedList;
+    }
+   public Map<Variable, Long> getCurrSnap()
+    {
+        return context.getCurrSnap();
+    }
+    public List<Long> getInputFromUser() {
+    System.out.println("please enter " + inputVars.size() + " inputs as numbers, separated by commas");
+
+    Scanner scanner = new Scanner(System.in);
+    String line = scanner.nextLine();
+
+    List<Long> numbers = new ArrayList<>();
+
+    // מפרקים לפי פסיקים בלבד
+    String[] tokens = line.split(",");
+
+    for (String token : tokens) {
+        try {
+            long num = Long.parseLong(token.trim());
+            numbers.add(num);
+        } catch (NumberFormatException e) {}
+    }
+        return numbers;
     }
 
-//    public void deploy()
-//    {
-//        Set<Label> allprogramlabels = context.labelMap.keySet();
-//        for(int i=0;i<instructions.size();i++){
-//            AbstractInstruction currentInstruction = instructions.get(i);
-//            if(currentInstruction instanceof SyntheticSugar)
-//            {
-//                AbstractInstruction source;
-//                ArrayList<AbstractInstruction> expandedInstructions = ((SyntheticSugar) currentInstruction).expand(this.vars);
-//                for(AbstractInstruction instruction:expandedInstructions){
-//                    instruction.setPos(++programCounter); // Set position for each expanded instruction
-//                }
-//                source=instructions.remove(i);
-//                expandedInstructions.forEach(instruction->instruction.setSyntheticSource(source));// Set the source for each expanded instruction
-//                if(source.getLab() instanceof Label) {
-//                    removeFirstLabelCollisions((Label) source.getLab(), expandedInstructions, allprogramlabels);
-//                }
-//                replaceLabels(expandedInstructions, allprogramlabels); // Replace labels in the expanded instructions if needed
-//                instructions.addAll(i, expandedInstructions); // Replace the synthetic sugar with its expanded instructions
-//                i+=expandedInstructions.size()-1; // Adjust index to account for the newly added instructions
-//            }
 
-        //}
-    //}
+
 
 
 }

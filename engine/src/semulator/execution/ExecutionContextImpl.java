@@ -22,12 +22,18 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     private int labelindex = 1;
     private int workVarIndex = 1;
 
+
+
     public void setLabelMap(SProgram program) {
         labelMap = new HashMap<>();
         for (var op : program.getOps()) {
             if (op.getLabel() != FixedLabel.EMPTY) // we don't want to add empty labels to the map
                 labelMap.put(op.getLabel(), op);
         }
+    }
+    public Map<Variable, Long> getCurrSnap()
+    {
+        return Map.copyOf(CurrSnap);
     }
 
 
@@ -39,6 +45,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     public ExecutionContextImpl() {
         snapshots = new ArrayList<>(); // move to another function that will handle inputs from the user
         labelMap = new HashMap<>();
+        CurrSnap = new HashMap<>();
     }
 
 

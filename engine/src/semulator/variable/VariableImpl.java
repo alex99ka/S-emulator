@@ -37,11 +37,7 @@ public class VariableImpl implements Variable
 
   @Override
   public Variable myClone() {
-        try {
-            return (VariableImpl) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(); // Can't happen
-        }
+        return  new VariableImpl(type, number);
     }
 
 }

@@ -10,7 +10,9 @@ import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class OpJumpZero extends AbstractOpBasic  {
     Label JZlabel;
@@ -60,7 +62,6 @@ public class OpJumpZero extends AbstractOpBasic  {
                 ops.add(jnz);
                 ops.add(go);
                 ops.add(anchor);
-                return ops;
             }
 
             default: {
@@ -80,8 +81,8 @@ public class OpJumpZero extends AbstractOpBasic  {
                 program.addLabel(skip, anchor);
                 ops.add(anchor);
 
-                return ops;
             }
+                return ops;
         }
     }
 

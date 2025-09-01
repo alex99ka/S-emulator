@@ -10,7 +10,9 @@ import semulator.program.SProgram;
 import semulator.variable.Variable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class OpJumpEqualVariable extends AbstractOpBasic {
 
@@ -44,14 +46,13 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
+        List<Op> ops = new ArrayList<>();
         switch (extensionLevel) {
             case 0: {
-                // לא מבצעים שום הרחבה
                 return List.of(this);
             }
 
             case 1: {
-                List<Op> ops = new ArrayList<>();
 
                 Label Lstart    = program.newUniqueLabel();
                 Label LcheckZ2  = program.newUniqueLabel();
@@ -100,12 +101,9 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 ops.add(jzEqual);
                 ops.add(anchorNotEq);
 
-                return ops;
             }
 
             default: {
-                List<Op> ops = new ArrayList<>();
-
                 Label Lstart    = program.newUniqueLabel();
                 Label LcheckZ2  = program.newUniqueLabel();
                 Label LnotEqual = program.newUniqueLabel();
@@ -161,8 +159,8 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 ops.addAll(jzEqExt);
                 ops.add(anchorNotEq);
 
-                return ops;
             }
+                return ops;
         }
     }
 

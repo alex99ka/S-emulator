@@ -53,9 +53,9 @@ public class OpConstantAssigment extends AbstractOpBasic  {
     public List<Op> expand(int extensionLevel, SProgram program) {
         List<Op> ops = new ArrayList<>();
 
+
         switch (extensionLevel) {
             case 0: {
-                // בלי הרחבה
                 return List.of(this);
             }
             case 1: {

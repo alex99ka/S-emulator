@@ -32,6 +32,10 @@ public class OpGoToLabel extends AbstractOpBasic {
     //implementation of deep clone
     @Override
     public OpGoToLabel myClone() {
+        if(nextLabel.equals(FixedLabel.EXIT))
+            return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), FixedLabel.EXIT);
+        else if(nextLabel.equals(FixedLabel.EMPTY))
+            return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), FixedLabel.EMPTY);
         return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), nextLabel.myClone());
     }
 
@@ -41,7 +45,6 @@ public class OpGoToLabel extends AbstractOpBasic {
 
         switch (extensionLevel) {
             case 0: {
-                // ללא הרחבה
                 return List.of(this);
             }
             default: {
