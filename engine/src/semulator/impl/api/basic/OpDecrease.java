@@ -43,7 +43,7 @@ public class OpDecrease extends AbstractOpBasic {
 
     @Override
     public String getRepresentation() {
-        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation());
+        return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
     public List<Op> expand(int extensionLevel, SProgram program)
     {

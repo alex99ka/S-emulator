@@ -112,7 +112,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
 
     @Override
     public Label newUniqueLabel() {
-        while (labelMap.containsKey(new LabelImpl(labelindex++))) {}
+        while (labelMap.containsKey(new LabelImpl(labelindex++))) {} //empty beacuse the ++ is needed
         return new LabelImpl(labelindex-1);
     }
 

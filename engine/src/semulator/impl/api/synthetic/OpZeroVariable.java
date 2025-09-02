@@ -51,21 +51,24 @@ public class OpZeroVariable extends AbstractOpBasic  {
             }
 
             default: {
-                Label loop = program.newUniqueLabel();
-
-                Op anchor = new OpNeutral(getVariable(), getLabel());
-                if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
-                    program.addLabel(getLabel(), anchor);
+                Label skip = program.newUniqueLabel();
+                Op jnz = new OpJumpNotZero(getVariable(), skip);
+                if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
+                    program.addLabel(getLabel(), jnz);
                 }
-
+                ops.add(jnz);
+                // תווית לולאה – מוציאים 1 בכל חזרה
+                Label loop = program.newUniqueLabel();
                 Op dec = new OpDecrease(getVariable(), loop);
                 program.addLabel(loop, dec);
-
+                // חזרה עד האפס
                 Op back = new OpJumpNotZero(getVariable(), loop);
-
-                ops.add(anchor);
+                // תווית עצירה – מגיעים לכאן אם skip
+                Op anchor = new OpNeutral(getVariable(), skip);
+                program.addLabel(skip, anchor);
                 ops.add(dec);
                 ops.add(back);
+                ops.add(anchor);
                 return ops;
             }
         }

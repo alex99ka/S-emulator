@@ -111,6 +111,7 @@ public class SprogramImpl implements SProgram {
                   .findFirst().get());
       else
           throw(new IllegalArgumentException("the op is not in the program"));
+      OpListindex++; //!!!!!!!!!!! god damn it
     }
     @Override
     public Long getVariableValue(Variable var) {

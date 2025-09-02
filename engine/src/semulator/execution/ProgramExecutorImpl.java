@@ -22,6 +22,10 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         Op current = program.getNextOp();
         while (current != null) {
             Label next = current.execute(program);
+            System.out.println(current.getRepresentation());
+            for (Variable v: program.getAllVars())
+                System.out.print("| " + v.getRepresentation() + " = " +program.getVariableValue(v) + " |"); //DEBUG
+            System.out.println("\n");
 
             if (next.equals(FixedLabel.EXIT)) {
                 break;
@@ -37,7 +41,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
                 current = target;
             }
             // stop at the end of the opList
-            if (program.getOpsIndex() >= program.getOps().size()) {
+            if (program.getOpsIndex() > program.getOps().size()) {
                 break;
             }
         }
