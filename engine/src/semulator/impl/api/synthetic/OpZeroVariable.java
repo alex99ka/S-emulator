@@ -1,6 +1,7 @@
 package semulator.impl.api.synthetic;
 
 import semulator.impl.api.basic.OpDecrease;
+import semulator.impl.api.basic.OpIncrease;
 import semulator.impl.api.basic.OpJumpNotZero;
 import semulator.impl.api.basic.OpNeutral;
 import semulator.impl.api.skeleton.AbstractOpBasic;
@@ -10,19 +11,22 @@ import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class OpZeroVariable extends AbstractOpBasic  {
     public OpZeroVariable( Variable variable) {
         this(variable, FixedLabel.EMPTY);
     }
+    public OpZeroVariable ( Variable variable, String creatorRep) {
+        super(OpData.ZERO_VARIABLE, variable, FixedLabel.EMPTY, creatorRep);
+    }
 
     public OpZeroVariable(Variable variable, Label label) {
         super(OpData.ZERO_VARIABLE, variable, label);
+    }
+    public OpZeroVariable( Variable variable, Label label, String creatorRep) {
+        super(OpData.ZERO_VARIABLE, variable, label, creatorRep);
     }
 
     @Override
@@ -52,19 +56,21 @@ public class OpZeroVariable extends AbstractOpBasic  {
 
             default: {
                 Label skip = program.newUniqueLabel();
-                Op jnz = new OpJumpNotZero(getVariable(), skip);
+                Label loop = program.newUniqueLabel();
+                Variable z1 = program.newWorkVar(); //dummy var for skipping if y == 0
+                Op inc = new OpIncrease(z1,repToChild(program));
+                Op jnz = new OpJumpNotZero(getVariable(), loop,repToChild(program)); //if not zero starts -1 loop else skip
+                Op jnzSkip  = new OpJumpNotZero(z1, skip,repToChild(program));
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
                 }
+                ops.add(inc);
                 ops.add(jnz);
-                // תווית לולאה – מוציאים 1 בכל חזרה
-                Label loop = program.newUniqueLabel();
-                Op dec = new OpDecrease(getVariable(), loop);
+                ops.add(jnzSkip);
+                Op dec = new OpDecrease(getVariable(), loop,repToChild(program));
                 program.addLabel(loop, dec);
-                // חזרה עד האפס
-                Op back = new OpJumpNotZero(getVariable(), loop);
-                // תווית עצירה – מגיעים לכאן אם skip
-                Op anchor = new OpNeutral(getVariable(), skip);
+                Op back = new OpJumpNotZero(getVariable(), loop,repToChild(program));
+                Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
                 program.addLabel(skip, anchor);
                 ops.add(dec);
                 ops.add(back);

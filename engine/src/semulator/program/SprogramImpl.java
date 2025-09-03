@@ -21,6 +21,7 @@ public class SprogramImpl implements SProgram {
     private ExecutionContextImpl context;
     private Set<Variable> variables;
     private LinkedHashSet <Label> labelsHashSet;
+    private int expandIndex;
 
 
     public SprogramImpl(String name) {
@@ -32,6 +33,7 @@ public class SprogramImpl implements SProgram {
         variables = new HashSet<>();
         labelsHashSet = new LinkedHashSet<>();
         inputVars = new ArrayList<>();
+        expandIndex = 0;
     }
 
     public void setAllVars(Set<Variable> inputVars)
@@ -56,6 +58,19 @@ public class SprogramImpl implements SProgram {
     public int getOpsIndex()
     {
         return OpListindex;
+    }
+    public int getOpsIndex(Op currentOp)
+    {
+        int index;
+        if (currentOp==null)
+            throw(new IllegalArgumentException("the op is null"));
+        else if (opList.stream().anyMatch(op -> op.getRepresentation().equals(currentOp.getRepresentation())))
+            index = opList.indexOf(opList.stream()
+                    .filter(op -> op.getRepresentation().equals(currentOp.getRepresentation()))
+                    .findFirst().get());
+        else
+            throw(new IllegalArgumentException("the op is not in the program"));
+        return index;
     }
     @Override
     public Variable GetNextVar(int i) {
@@ -257,9 +272,9 @@ public class SprogramImpl implements SProgram {
         this.context = new ExecutionContextImpl(context);
     }
 
-
-
-
-
+    @Override
+    public int getExapndIndex() {
+        return expandIndex++;
+    }
 }
 

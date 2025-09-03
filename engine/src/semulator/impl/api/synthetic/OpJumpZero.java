@@ -20,9 +20,17 @@ public class OpJumpZero extends AbstractOpBasic  {
         super(OpData.JUMP_ZERO, variable);
         this.JZlabel = JZlabel;
     }
+    public OpJumpZero( Variable variable, Label JZlabel, String creatorRep) {
+        super(OpData.JUMP_ZERO, variable, FixedLabel.EMPTY, creatorRep);
+        this.JZlabel = JZlabel;
+    }
 
     public OpJumpZero( Variable variable, Label label, Label JZlabel) {
         super(OpData.JUMP_ZERO, variable, label);
+        this.JZlabel = JZlabel;
+    }
+    public OpJumpZero( Variable variable, Label label, Label JZlabel, String creatorRep) {
+        super(OpData.JUMP_ZERO, variable, label, creatorRep);
         this.JZlabel = JZlabel;
     }
 
@@ -48,15 +56,15 @@ public class OpJumpZero extends AbstractOpBasic  {
             case 1: {
                 Label skip = program.newUniqueLabel();
 
-                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel());
+                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel(),repToChild(program));
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
                 }
 
                 Variable dummy = program.newWorkVar();
-                Op go = new OpGoToLabel(dummy, JZlabel);
+                Op go = new OpGoToLabel(dummy, JZlabel,repToChild(program));
 
-                Op anchor = new OpNeutral(getVariable(), skip);
+                Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
                 program.addLabel(skip, anchor);
 
                 ops.add(jnz);
@@ -67,17 +75,17 @@ public class OpJumpZero extends AbstractOpBasic  {
             default: {
                 Label skip = program.newUniqueLabel();
 
-                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel());
+                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel(),repToChild(program));
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
                 }
                 ops.add(jnz);
 
                 Variable dummy = program.newWorkVar();
-                Op go = new OpGoToLabel(dummy, JZlabel);
+                Op go = new OpGoToLabel(dummy, JZlabel,repToChild(program));
                 ops.addAll(go.expand(1, program));
 
-                Op anchor = new OpNeutral(getVariable(), skip);
+                Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
                 program.addLabel(skip, anchor);
                 ops.add(anchor);
 

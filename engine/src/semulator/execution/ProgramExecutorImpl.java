@@ -6,6 +6,7 @@ import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class ProgramExecutorImpl implements ProgramExecutor {
@@ -18,12 +19,13 @@ public class ProgramExecutorImpl implements ProgramExecutor {
 
     public long run(List<Long> inputs) {
         program.createFirstSnap(inputs);  // enter the vals from the user to the input vars
-
+        Set<Variable> allVars = new TreeSet<>(Comparator.comparing(Variable::getRepresentation));
+        allVars.addAll(program.getAllVars());
         Op current = program.getNextOp();
         while (current != null) {
             Label next = current.execute(program);
-            System.out.println(current.getRepresentation());
-            for (Variable v: program.getAllVars())
+            System.out.println(current.repToChild(program));
+            for (Variable v: allVars)
                 System.out.print("| " + v.getRepresentation() + " = " +program.getVariableValue(v) + " |"); //DEBUG
             System.out.println("\n");
 

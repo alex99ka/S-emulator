@@ -31,9 +31,14 @@ public class OpDecrease extends AbstractOpBasic {
     public OpDecrease(Variable variable) {
         super(OpData.DECREASE, variable);
     }
-
+    public OpDecrease(Variable variable, String creatorRep) {
+        super(OpData.DECREASE, variable,creatorRep);
+    }
     public OpDecrease(Variable variable, Label label) {
-        super(OpData.DECREASE, variable, label);
+        super(OpData.DECREASE, variable);
+    }
+    public OpDecrease(Variable variable, Label label,String creatorRep) {
+        super(OpData.DECREASE, variable,creatorRep);
     }
     //implementation of deep clone
     @Override
@@ -42,10 +47,18 @@ public class OpDecrease extends AbstractOpBasic {
     }
 
     @Override
+    public List<Op> expand(int extensionLevel, SProgram program) {
+        return List.of();
+    }
+
+    @Override
     public String getRepresentation() {
         return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
-    public List<Op> expand(int extensionLevel, SProgram program)
+
+
+
+    public List<Op> expand(int extensionLevel, SProgram program, Variable papa)
     {
         return List.of(this);
     }

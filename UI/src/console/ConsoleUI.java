@@ -32,6 +32,7 @@ public class ConsoleUI {
                 choice = scanner.nextInt();
             } catch (Exception e) {
                 System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); //clean the buffer
                 continue;
             }
 

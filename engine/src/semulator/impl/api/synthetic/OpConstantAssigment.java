@@ -22,9 +22,17 @@ public class OpConstantAssigment extends AbstractOpBasic  {
         super(OpData.CONSTANT_ASSIGNMENT, variable);
         this.constant = constant;
     }
+    public OpConstantAssigment( Variable variable, Long constant, String creatorRep) {
+        super(OpData.CONSTANT_ASSIGNMENT, variable, FixedLabel.EMPTY, creatorRep);
+        this.constant = constant;
+    }
 
     public OpConstantAssigment(Variable variable, Label label,  Long constant) {
         super(OpData.CONSTANT_ASSIGNMENT, variable, label);
+        this.constant = constant;
+    }
+    public OpConstantAssigment( Variable variable, Label label,  Long constant, String creatorRep) {
+        super(OpData.CONSTANT_ASSIGNMENT, variable, label, creatorRep);
         this.constant = constant;
     }
 
@@ -65,27 +73,27 @@ public class OpConstantAssigment extends AbstractOpBasic  {
                 Label loop = program.newUniqueLabel();
                 Label after = program.newUniqueLabel();
 
-                Op zeroV = new OpZeroVariable(v, getLabel());
+                Op zeroV = new OpZeroVariable(v, getLabel(),repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), zeroV);
                 }
                 ops.add(zeroV);
 
                 for (long i = 0; i < K; i++) {
-                    ops.add(new OpIncrease(z1));
+                    ops.add(new OpIncrease(z1,repToChild(program)));
                 }
 
-                Op jz = new OpJumpZero(z1, after);
+                Op jz = new OpJumpZero(z1, after,repToChild(program));
                 ops.add(jz);
                 // z1->v loop
-                Op decZ1 = new OpDecrease(z1, loop);
+                Op decZ1 = new OpDecrease(z1, loop,repToChild(program));
                 program.addLabel(loop, decZ1);
                 ops.add(decZ1);
 
-                ops.add(new OpIncrease(v));
-                ops.add(new OpJumpNotZero(z1, loop));
+                ops.add(new OpIncrease(v,repToChild(program)));
+                ops.add(new OpJumpNotZero(z1, loop,repToChild(program)));
                 //end of loop
-                Op end = new OpNeutral(v, after);
+                Op end = new OpNeutral(v, after,repToChild(program));
                 program.addLabel(after, end);
                 ops.add(end);
 
@@ -99,27 +107,27 @@ public class OpConstantAssigment extends AbstractOpBasic  {
                 Label loop = program.newUniqueLabel();
                 Label after = program.newUniqueLabel();
 
-                Op zeroV = new OpZeroVariable(v, getLabel());
+                Op zeroV = new OpZeroVariable(v, getLabel(),repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), zeroV);
                 }
                 ops.addAll(zeroV.expand(extensionLevel - 1, program));
 
                 for (long i = 0; i < K; i++) {
-                    ops.add(new OpIncrease(z1));
+                    ops.add(new OpIncrease(z1,repToChild(program)));
                 }
 
-                Op jz = new OpJumpZero(z1, after);
+                Op jz = new OpJumpZero(z1, after,repToChild(program));
                 ops.addAll(jz.expand(extensionLevel - 1, program));
 
-                Op decZ1 = new OpDecrease(z1, loop);
+                Op decZ1 = new OpDecrease(z1, loop,repToChild(program));
                 program.addLabel(loop, decZ1);
                 ops.add(decZ1);
 
-                ops.add(new OpIncrease(v));
-                ops.add(new OpJumpNotZero(z1, loop)); // בסיסי
+                ops.add(new OpIncrease(v,repToChild(program)));
+                ops.add(new OpJumpNotZero(z1, loop,repToChild(program))); // בסיסי
 
-                Op end = new OpNeutral(v, after);
+                Op end = new OpNeutral(v, after,repToChild(program));
                 program.addLabel(after, end);
                 ops.add(end);
 

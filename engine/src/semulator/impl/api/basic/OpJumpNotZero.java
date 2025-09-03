@@ -16,13 +16,21 @@ public class OpJumpNotZero extends AbstractOpBasic {
         this(variable, jnzLabel, FixedLabel.EMPTY);
     }
 
+    public OpJumpNotZero(Variable variable, Label jnzLabel, String creatorRep) {
+        this(variable, FixedLabel.EMPTY, jnzLabel, creatorRep);
+    }
+
     public OpJumpNotZero(Variable variable, Label jnzLabel, Label label) {
-        super(OpData.JUMP_NOT_ZERO,variable, label );
+        super(OpData.JUMP_NOT_ZERO, variable, label);
         this.jnzLabel = jnzLabel;
     }
 
-    public List<Op> expand(int extensionLevel, SProgram program)
-    {
+    public OpJumpNotZero(Variable variable, Label label, Label jnzLabel, String creatorRep) {
+        super(OpData.JUMP_NOT_ZERO, variable, label, creatorRep);
+        this.jnzLabel = jnzLabel;
+    }
+
+    public List<Op> expand(int extensionLevel, SProgram program) {
         return List.of(this);
     }
 
@@ -35,14 +43,16 @@ public class OpJumpNotZero extends AbstractOpBasic {
         program.increaseCycleCounter(getCycles());
         return FixedLabel.EMPTY;
     }
+
     //implementation of deep clone
     @Override
     public OpJumpNotZero myClone() {
         return new OpJumpNotZero(getVariable().myClone(), jnzLabel.myClone(), getLabel().myClone());
     }
+
     @Override
-    public String getRepresentation()
-    {
+    public String getRepresentation() {
         return String.format("IF %s!=0 GOTO %s", getVariable().getRepresentation(), jnzLabel.getLabelRepresentation());
     }
+
 }

@@ -24,9 +24,19 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
         this.JEConstantLabel = JEConstantLabel;
         this.constant = constantValue;
     }
+    public OpJumpEqualConstant( Variable variable, Label JEConstantLabel, Long constantValue, String creatorRep) {
+        super(OpData.JUMP_EQUAL_CONSTANT, variable, FixedLabel.EMPTY, creatorRep);
+        this.JEConstantLabel = JEConstantLabel;
+        this.constant = constantValue;
+    }
 
     public OpJumpEqualConstant( Variable variable, Label label, Label JEConstantLabel, Long constantValue) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, label);
+        this.JEConstantLabel = JEConstantLabel;
+        this.constant = constantValue;
+    }
+    public OpJumpEqualConstant( Variable variable, Label label, Label JEConstantLabel, Long constantValue, String creatorRep) {
+        super(OpData.JUMP_EQUAL_CONSTANT, variable, label, creatorRep);
         this.JEConstantLabel = JEConstantLabel;
         this.constant = constantValue;
     }
@@ -58,7 +68,7 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Label notEqLbl = program.newUniqueLabel();
 
                 // z1 = v
-                Op a1 = new OpAssignment(z1, getLabel(), v);
+                Op a1 = new OpAssignment(z1, getLabel(), v,repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), a1);
                 }
@@ -66,15 +76,15 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
 
                 // check if equal
                 for (long i = 0; i < k; i++) {
-                    ops.add(new OpJumpZero(z1, notEqLbl)); //
-                    ops.add(new OpDecrease(z1));
+                    ops.add(new OpJumpZero(z1, notEqLbl,repToChild(program))); //
+                    ops.add(new OpDecrease(z1,repToChild(program)));
                 }
                 // z1 > k?
-                ops.add(new OpJumpNotZero(z1, notEqLbl));
-                ops.add(new OpGoToLabel(z1, target)); // great success for me
+                ops.add(new OpJumpNotZero(z1, notEqLbl,repToChild(program)));
+                ops.add(new OpGoToLabel(z1, target,repToChild(program))); // great success for me
 
                 // not equal anchor
-                Op end = new OpNeutral(v, notEqLbl);
+                Op end = new OpNeutral(v, notEqLbl,repToChild(program));
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
 
@@ -87,25 +97,25 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Label target   = JEConstantLabel;
                 Label notEqLbl = program.newUniqueLabel();
 
-                Op a1 = new OpAssignment(z1, getLabel(), v);
+                Op a1 = new OpAssignment(z1, getLabel(), v,repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), a1);
                 }
                 ops.addAll(a1.expand(1, program));
 
                 for (long i = 0; i < k; i++) {
-                    Op jz = new OpJumpZero(z1, notEqLbl);
+                    Op jz = new OpJumpZero(z1, notEqLbl,repToChild(program));
                     ops.addAll(jz.expand(1, program));
-                    ops.add(new OpDecrease(z1));
+                    ops.add(new OpDecrease(z1,repToChild(program)));
                 }
 
-                Op jnz = new OpJumpNotZero(z1, notEqLbl);
+                Op jnz = new OpJumpNotZero(z1, notEqLbl,repToChild(program));
                 ops.add(jnz);
 
-                Op go = new OpGoToLabel(program.newWorkVar(), target);
+                Op go = new OpGoToLabel(program.newWorkVar(), target,repToChild(program));
                 ops.addAll(go.expand(1, program));
 
-                Op end = new OpNeutral(v, notEqLbl);
+                Op end = new OpNeutral(v, notEqLbl,repToChild(program));
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
 
@@ -118,25 +128,25 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Label target   = this.JEConstantLabel;
                 Label notEqLbl = program.newUniqueLabel();
 
-                Op a1 = new OpAssignment(z1, getLabel(), v);
+                Op a1 = new OpAssignment(z1, getLabel(), v,repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), a1);
                 }
                 ops.addAll(a1.expand(extensionLevel - 1, program));
 
                 for (long i = 0; i < k; i++) {
-                    Op jz = new OpJumpZero(z1, notEqLbl);
+                    Op jz = new OpJumpZero(z1, notEqLbl,repToChild(program));
                     ops.addAll(jz.expand(extensionLevel - 1, program));
-                    ops.add(new OpDecrease(z1));
+                    ops.add(new OpDecrease(z1,repToChild(program)));
                 }
 
-                Op jnz = new OpJumpNotZero(z1, notEqLbl);
+                Op jnz = new OpJumpNotZero(z1, notEqLbl,repToChild(program));
                 ops.add(jnz);
 
-                Op go = new OpGoToLabel(program.newWorkVar(), target);
+                Op go = new OpGoToLabel(program.newWorkVar(), target,repToChild(program));
                 ops.addAll(go.expand(extensionLevel - 1, program));
 
-                Op end = new OpNeutral(v, notEqLbl);
+                Op end = new OpNeutral(v, notEqLbl,repToChild(program));
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
 

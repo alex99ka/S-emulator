@@ -15,8 +15,16 @@ public class OpNeutral extends AbstractOpBasic
         super(OpData.NEUTRAL, variable);
     }
 
+    public OpNeutral(Variable variable, String creatorRep) {
+        this( variable, FixedLabel.EXIT, creatorRep );
+    }
+
     public OpNeutral(Variable variable, Label label) {
         super(OpData.NEUTRAL, variable, label);
+    }
+
+    public OpNeutral( Variable variable, Label label, String creatorRep) {
+        super(OpData.NEUTRAL, variable, label, creatorRep);
     }
 
     public List<Op> expand(int extensionLevel, SProgram program) {
@@ -39,5 +47,7 @@ public class OpNeutral extends AbstractOpBasic
     {
         return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
+
+
 }
 

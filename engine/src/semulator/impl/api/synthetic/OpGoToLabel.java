@@ -18,9 +18,17 @@ public class OpGoToLabel extends AbstractOpBasic {
         super(OpData.GOTO_LABEL,variable);
         this.nextLabel = nextLabel;
     }
+    public OpGoToLabel(Variable variable, Label nextLabel,String creatorRep) {
+        super(OpData.GOTO_LABEL, variable, FixedLabel.EMPTY, creatorRep);
+        this.nextLabel = nextLabel;
+    }
 
     public OpGoToLabel(Variable variable, Label label,Label nextLabel) {
         super(OpData.GOTO_LABEL, variable, label);
+        this.nextLabel = nextLabel;
+    }
+    public OpGoToLabel( Variable variable, Label label, Label nextLabel,String creatorRep) {
+        super(OpData.GOTO_LABEL, variable, label, creatorRep);
         this.nextLabel = nextLabel;
     }
 
@@ -49,13 +57,13 @@ public class OpGoToLabel extends AbstractOpBasic {
             }
             default: {
                 Variable tmp = program.newWorkVar();
-                Op inc = new OpIncrease(tmp, getLabel());
+                Op inc = new OpIncrease(tmp, getLabel(),repToChild(program));
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), inc);
                 }
 
                 Label target = nextLabel;
-                Op jnz = new OpJumpNotZero(tmp, target);
+                Op jnz = new OpJumpNotZero(tmp, target,repToChild(program));
 
                 ops.add(inc);
                 ops.add(jnz);

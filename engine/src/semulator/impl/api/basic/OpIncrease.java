@@ -14,9 +14,14 @@ public class OpIncrease extends AbstractOpBasic {
     public OpIncrease(Variable variable) {
         super(OpData.INCREASE,variable);
     }
-
+    public OpIncrease( Variable variable, String creatorRep) {
+        super(OpData.INCREASE, variable, creatorRep);
+    }
     public OpIncrease(Variable variable, Label label) {
         super(OpData.INCREASE, variable, label);
+    }
+    public OpIncrease(Variable variable, Label label, String creatorRep) {
+        super(OpData.INCREASE, variable, label, creatorRep);
     }
 
     @Override
@@ -47,4 +52,5 @@ public class OpIncrease extends AbstractOpBasic {
     public String getRepresentation() {
         return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
+
 }

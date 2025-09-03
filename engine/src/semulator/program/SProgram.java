@@ -34,6 +34,7 @@ public interface SProgram
     Op getNextOp();
     void ChangeOpIndex(Op currentOp);
     int getOpsIndex();
+    public int getOpsIndex(Op currentOp); // overload for external use for father rep
     void setInputVars(List<Variable> vars);
     void setAllVars(Set<Variable> inputVars);
     Set<Variable> getAllVars();
@@ -45,5 +46,6 @@ public interface SProgram
     void print();
      Map<Variable, Long> getCurrSnap();
      List<Long> getInputFromUser();
+     int getExapndIndex();
      void SetContext(ExecutionContext context);
 }
