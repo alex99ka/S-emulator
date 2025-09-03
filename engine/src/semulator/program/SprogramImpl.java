@@ -185,19 +185,7 @@ public class SprogramImpl implements SProgram {
         {
             currentOp = (AbstractOpBasic) opList.get(i);
             // if type is synthetic put S in type else put B
-            if(currentOp.getType().equals (OpType.SYNTHETIC.getType()))
-                type = "S";
-            else
-                type = "B";
-
-            if (currentOp.getLabel() != null) {
-                label = currentOp.getLabel().getLabelRepresentation();
-            } else {
-                label = ""; // if there is no label print empty spaces
-            }
-            opRep = currentOp.getRepresentation();
-            cycles= String.valueOf(currentOp.getCycles());
-            res.add(String.format("#%d (%s) [%5s] <%s> (%s)", i, type, label, opRep, cycles));
+            res.add(currentOp.repToChild(this).replaceFirst("<<<", ""));
         }
          for (Variable v : this.inputVars) {
                 inputVars.add(v.getRepresentation());
@@ -207,7 +195,7 @@ public class SprogramImpl implements SProgram {
          System.out.println("Program Variables: \n");
          System.out.println(String.join(" ", inputVars)+"\n");
          System.out.println("Program Labels: \n");
-         for (Label l : labelsHashSet) {
+         for (Label l : context.getLabelMap().keySet()) {
                 if(l.equals(FixedLabel.EXIT))
                     exitLabel=true;
                 else

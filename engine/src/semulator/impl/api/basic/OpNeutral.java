@@ -47,7 +47,5 @@ public class OpNeutral extends AbstractOpBasic
     {
         return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation());
     }
-
-
 }
 

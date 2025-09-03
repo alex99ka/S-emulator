@@ -48,7 +48,7 @@ public class OpDecrease extends AbstractOpBasic {
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        return List.of();
+        return List.of(this);
     }
 
     @Override

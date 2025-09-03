@@ -56,7 +56,7 @@ public class OpJumpZero extends AbstractOpBasic  {
             case 1: {
                 Label skip = program.newUniqueLabel();
 
-                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel(),repToChild(program));
+                Op jnz = new OpJumpNotZero(getVariable(), getLabel(),skip ,repToChild(program));
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
                 }
@@ -75,7 +75,7 @@ public class OpJumpZero extends AbstractOpBasic  {
             default: {
                 Label skip = program.newUniqueLabel();
 
-                Op jnz = new OpJumpNotZero(getVariable(), skip, getLabel(),repToChild(program));
+                Op jnz = new OpJumpNotZero(getVariable(), getLabel(),skip ,repToChild(program));
                 if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
                 }
