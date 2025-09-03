@@ -11,17 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpIncrease extends AbstractOpBasic {
+
     public OpIncrease(Variable variable) {
-        super(OpData.INCREASE,variable);
+        this( variable,"");
     }
-    public OpIncrease( Variable variable, String creatorRep) {
-        super(OpData.INCREASE, variable, creatorRep);
+    public OpIncrease(Variable variable, String creatorRep) {
+        this( variable,FixedLabel.EMPTY,creatorRep);
     }
     public OpIncrease(Variable variable, Label label) {
-        super(OpData.INCREASE, variable, label);
+        this( variable, label,"");
     }
-    public OpIncrease(Variable variable, Label label, String creatorRep) {
-        super(OpData.INCREASE, variable, label, creatorRep);
+    public OpIncrease(Variable variable, Label label,String creatorRep) {
+        super(OpData.INCREASE,variable,label  ,creatorRep);
     }
 
     @Override
@@ -45,12 +46,14 @@ public class OpIncrease extends AbstractOpBasic {
     }
     //implementation of deep clone
     @Override
-    public OpIncrease myClone() {
-        return new OpIncrease(getVariable().myClone(), getLabel().myClone());
+    public Op myClone() {
+        Op op = new OpIncrease(getVariable().myClone(), getLabel().myClone());
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
     }
     @Override
     public String getRepresentation() {
-        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation());
+        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
     }
 
 }

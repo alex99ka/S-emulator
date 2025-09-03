@@ -26,12 +26,12 @@ public class Factory
     public SProgram loadProgramFromXml(File xmlFile) throws Exception
     {
         // 1. Basic file validation (exists and .xml extension)
-        if (xmlFile == null || !xmlFile.exists() || !xmlFile.isFile()) {
-            throw new IllegalArgumentException("XML file not found: " + xmlFile);
-        }
-        if (!xmlFile.getName().toLowerCase().endsWith(".xml")) {
+        if (xmlFile == null||!xmlFile.getName().toLowerCase().endsWith(".xml")) {
             throw new IllegalArgumentException("Invalid file type: " + xmlFile.getName()
                     + " (expected .xml)");
+        }
+        if ( !xmlFile.exists() || !xmlFile.isFile()) {
+            throw new IllegalArgumentException("XML file not found: " + xmlFile);
         }
 
         // 2. Unmarshal XML into SProgram object using JAXB
@@ -91,6 +91,7 @@ public class Factory
         List<Variable> inputVars = new ArrayList<>();
         Label lbl;
         String labelRegex = "L\\d+"; // regex pattern for valid labels like L1, L2, etc.
+        int i = 1;
 
         // Convert each SInstruction to an Op object and add to program
         for (XOp inst : sInstructions) {
@@ -254,6 +255,8 @@ public class Factory
                 if (lbl != FixedLabel.EXIT && lbl != FixedLabel.EMPTY) {
                     program.addLabel(lbl, op);
                 }
+                op.setExpandIndex(i);
+                i++;
 
                 program.getOps().add(op);  // add the constructed operation to the program's list
             }

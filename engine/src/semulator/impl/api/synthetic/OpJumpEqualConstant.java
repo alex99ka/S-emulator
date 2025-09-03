@@ -48,8 +48,10 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
     }
     //implementation of deep clone
     @Override
-    public OpJumpEqualConstant myClone() {
-        return new OpJumpEqualConstant(getVariable().myClone(), getLabel().myClone(), JEConstantLabel.myClone(), constant);
+    public Op myClone() {
+        Op op = new OpJumpEqualConstant(getVariable().myClone(), getLabel().myClone(), JEConstantLabel.myClone(), constant);
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
     }
 
     @Override
@@ -158,6 +160,6 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
 
     @Override
     public String getRepresentation() {
-        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation());
+        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation()) + getFather();
     }
 }

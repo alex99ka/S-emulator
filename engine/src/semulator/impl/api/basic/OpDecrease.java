@@ -29,21 +29,24 @@ public class OpDecrease extends AbstractOpBasic {
 
 
     public OpDecrease(Variable variable) {
-        super(OpData.DECREASE, variable);
+        this( variable,"");
     }
     public OpDecrease(Variable variable, String creatorRep) {
-        super(OpData.DECREASE, variable,creatorRep);
+        this( variable,FixedLabel.EMPTY,creatorRep);
     }
     public OpDecrease(Variable variable, Label label) {
-        super(OpData.DECREASE, variable);
+        this( variable, label,"");
     }
     public OpDecrease(Variable variable, Label label,String creatorRep) {
-        super(OpData.DECREASE, variable,creatorRep);
+        super(OpData.DECREASE,variable,label  ,creatorRep);
     }
     //implementation of deep clone
     @Override
-    public OpDecrease myClone() {
-        return new OpDecrease(getVariable().myClone(),getLabel().myClone());
+    public Op myClone() {
+
+        Op op = new OpDecrease(getVariable().myClone(),getLabel().myClone());
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class OpDecrease extends AbstractOpBasic {
 
     @Override
     public String getRepresentation() {
-        return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation());
+        return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
     }
 
 

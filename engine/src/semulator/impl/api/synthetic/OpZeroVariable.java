@@ -1,5 +1,6 @@
 package semulator.impl.api.synthetic;
 
+import semulator.execution.ProgramExecutor;
 import semulator.impl.api.basic.OpDecrease;
 import semulator.impl.api.basic.OpIncrease;
 import semulator.impl.api.basic.OpJumpNotZero;
@@ -23,7 +24,7 @@ public class OpZeroVariable extends AbstractOpBasic  {
     }
 
     public OpZeroVariable(Variable variable, Label label) {
-        super(OpData.ZERO_VARIABLE, variable, label);
+        this( variable, label,"");
     }
     public OpZeroVariable( Variable variable, Label label, String creatorRep) {
         super(OpData.ZERO_VARIABLE, variable, label, creatorRep);
@@ -42,39 +43,49 @@ public class OpZeroVariable extends AbstractOpBasic  {
     }
     //implementation of deep clone
     @Override
-    public OpZeroVariable myClone() {
-        return new OpZeroVariable(getVariable().myClone(), getLabel().myClone());
+    public Op myClone() {
+
+        Op op =  new OpZeroVariable(getVariable().myClone(), getLabel().myClone());
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
     }
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
-        List<Op> ops = new ArrayList<>();
         switch (extensionLevel) {
-            case 0: {
+            case 0 : {
                 return List.of(this);
             }
+            default : {
+                // while (var != 0) { var-- }
+                List<Op> ops = new ArrayList<>();
 
-            default: {
-                Label skip = program.newUniqueLabel();
-                Label loop = program.newUniqueLabel();
-                Variable z1 = program.newWorkVar(); //dummy var for skipping if y == 0
-                Op inc = new OpIncrease(z1,repToChild(program));
-                Op jnz = new OpJumpNotZero(getVariable(), loop,repToChild(program)); //if not zero starts -1 loop else skip
-                Op jnzSkip  = new OpJumpNotZero(z1, skip,repToChild(program));
-                if (getLabel() != null && getLabel() != FixedLabel.EMPTY) {
+                final Variable v = getVariable();
+
+                final Label L_BODY = program.newUniqueLabel();
+                final Label L_END  = program.newUniqueLabel();
+
+                // אם v != 0 → קפוץ לגוף; אחרת נפילה ל-NEXT (סיום)
+                Op jnz =new OpJumpNotZero(v, getLabel(),L_BODY,repToChild(program));
+                ops.add(jnz);
+                if(getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
                 }
-                ops.add(inc);
-                ops.add(jnz);
-                ops.add(jnzSkip);
-                Op dec = new OpDecrease(getVariable(), loop,repToChild(program));
-                program.addLabel(loop, dec);
-                Op back = new OpJumpNotZero(getVariable(), loop,repToChild(program));
-                Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
-                program.addLabel(skip, anchor);
+                Variable dummy = program.newWorkVar();
+                OpIncrease inc = new OpIncrease(dummy,repToChild(program));
+                ops.add(inc); // פעולה ניטרלית לצורך ספירת מחזורים
+                Op jnzToEnd = new OpJumpNotZero(dummy, L_END,repToChild(program));
+                ops.add(jnzToEnd);
+                // גוף הלולאה
+                Op dec = new OpDecrease(v,L_BODY,repToChild(program));
+                program.addLabel(L_BODY, dec);
                 ops.add(dec);
-                ops.add(back);
-                ops.add(anchor);
+                ops.add(new OpJumpNotZero(v, L_BODY,repToChild(program)));
+
+                Op endAnchor = new OpNeutral(v, L_END,repToChild(program));
+                program.addLabel(L_END, endAnchor);
+                ops.add(endAnchor);
+
                 return ops;
             }
         }
@@ -83,6 +94,6 @@ public class OpZeroVariable extends AbstractOpBasic  {
 
     @Override
     public String getRepresentation() {
-        return String.format("%s ← 0", getVariable().getRepresentation());
+        return String.format("%s ← 0", getVariable().getRepresentation()) + getFather();
     }
 }

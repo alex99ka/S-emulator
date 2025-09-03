@@ -9,27 +9,48 @@ public abstract class AbstractOpBasic implements Op {
     private final Label label;
     private final Variable variable;
     private final String father;
+    private int expandIndex = - 1;
+    protected int myExpandIndex = -1;
 
     public String getFather() {
         return father;
+    }
+    protected int  getMyExpandIndex() {
+        return myExpandIndex;
     }
 
     @Override
     public String repToChild(SProgram program) {
         String rep;
         String lbl;
+        int index;
         if (label == null)
             lbl = "";
         else
-            lbl = label.equals(FixedLabel.EMPTY) ? label.getLabelRepresentation():""  ;
+            lbl = label.getLabelRepresentation();
         StringBuilder sb = new StringBuilder();
         sb.append(getFatherRep());
-        int index = getFatherRep() == null ? program.getOpsIndex(this) :program.getExapndIndex();
-        sb.append("<<<");
+        if(getFatherRep() == null || getFatherRep().isEmpty()) {
+            if (getMyExpandIndex() == -1)
+                index = program.getOpsIndex(this) + 1;
+            else
+                index = getMyExpandIndex();
+        }
+        else
+            index = program.getExapndIndex();
+        setExpandIndex(index);
+        String type;
+        if(getType().equals(OpType.BASIC.getType()))
+            type = "B";
+        else
+            type = "S";
+        sb.append("<<< ");
         sb.append(String.format("#%d (S)[%5s] %S (%d)  ",index ,lbl,getRepresentation(),getCycles()));
         rep = sb.toString();
         return rep;
     }
+
+    public void setExpandIndex(int index) {myExpandIndex = index;}
 
     //Ctors
     protected AbstractOpBasic(OpData opData, Variable variable) { //allow to create without label

@@ -49,12 +49,15 @@ public class OpConstantAssigment extends AbstractOpBasic  {
     }
     //implementation of deep clone
     @Override
-    public OpConstantAssigment myClone() {
-        return new OpConstantAssigment(getVariable().myClone(), getLabel().myClone(), constant);
+    public Op myClone() {
+        Op op = new OpConstantAssigment(getVariable().myClone(), getLabel().myClone(), constant);
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
+
     }
     @Override
     public String getRepresentation() {
-        return String.format("%s ← %d", getVariable().getRepresentation(), constant);
+        return String.format("%s ← %d", getVariable().getRepresentation(), constant)+ getFather();
     }
 
     @Override

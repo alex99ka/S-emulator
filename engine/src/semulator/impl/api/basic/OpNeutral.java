@@ -12,7 +12,7 @@ import java.util.List;
 public class OpNeutral extends AbstractOpBasic
 {
     public OpNeutral(Variable variable) {
-        super(OpData.NEUTRAL, variable);
+        this( variable,FixedLabel.EMPTY,"");
     }
 
     public OpNeutral(Variable variable, String creatorRep) {
@@ -20,7 +20,7 @@ public class OpNeutral extends AbstractOpBasic
     }
 
     public OpNeutral(Variable variable, Label label) {
-        super(OpData.NEUTRAL, variable, label);
+        this( variable, label,"");
     }
 
     public OpNeutral( Variable variable, Label label, String creatorRep) {
@@ -39,13 +39,15 @@ public class OpNeutral extends AbstractOpBasic
 
     //implementation of deep clone
     @Override
-    public OpNeutral myClone() {
-        return new OpNeutral(getVariable().myClone(), getLabel().myClone());
+    public Op myClone() {
+        Op op = new OpNeutral(getVariable().myClone(), getLabel().myClone());
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
     }
     @Override
     public String getRepresentation()
     {
-        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation());
+        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
     }
 }
 

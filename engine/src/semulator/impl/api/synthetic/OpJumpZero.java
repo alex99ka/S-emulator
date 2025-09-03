@@ -41,8 +41,10 @@ public class OpJumpZero extends AbstractOpBasic  {
     }
     //implementation of deep clone
     @Override
-    public OpJumpZero myClone() {
-        return new OpJumpZero(getVariable().myClone(), getLabel().myClone(), JZlabel.myClone());
+    public Op myClone() {
+        Op op = new OpJumpZero(getVariable().myClone(), getLabel().myClone(), JZlabel.myClone());
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
     }
 
     @Override
@@ -70,6 +72,7 @@ public class OpJumpZero extends AbstractOpBasic  {
                 ops.add(jnz);
                 ops.add(go);
                 ops.add(anchor);
+                break;
             }
 
             default: {
@@ -88,15 +91,16 @@ public class OpJumpZero extends AbstractOpBasic  {
                 Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
                 program.addLabel(skip, anchor);
                 ops.add(anchor);
+                break;
 
             }
-                return ops;
         }
+        return ops;
     }
 
 
     @Override
     public String getRepresentation() {
-        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), JZlabel.getLabelRepresentation());
+        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), JZlabel.getLabelRepresentation()) + getFather();
     }
 }

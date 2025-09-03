@@ -39,12 +39,17 @@ public class OpGoToLabel extends AbstractOpBasic {
     }
     //implementation of deep clone
     @Override
-    public OpGoToLabel myClone() {
+    public Op myClone() {
+        Op op;
         if(nextLabel.equals(FixedLabel.EXIT))
-            return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), FixedLabel.EXIT);
+            op= new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), FixedLabel.EXIT);
         else if(nextLabel.equals(FixedLabel.EMPTY))
-            return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), FixedLabel.EMPTY);
-        return new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), nextLabel.myClone());
+            op = new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), FixedLabel.EMPTY);
+        else
+              op = new OpGoToLabel(getVariable().myClone(), getLabel().myClone(), nextLabel.myClone());
+        op.setExpandIndex(getMyExpandIndex());
+        return op;
+
     }
 
     @Override
@@ -76,7 +81,7 @@ public class OpGoToLabel extends AbstractOpBasic {
     @Override
     public String getRepresentation()
     {
-        return String.format("GOTO %s", nextLabel.getLabelRepresentation());
+        return String.format("GOTO %s", nextLabel.getLabelRepresentation()) + getFather();
     }
 
     public List<Op> expand() {
