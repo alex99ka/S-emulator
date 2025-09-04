@@ -36,6 +36,7 @@ public interface SProgram
     int getOpsIndex();
     public int getOpsIndex(Op currentOp); // overload for external use for father rep
     void setInputVars(List<Variable> vars);
+    public void setInputVars(Set<Variable> vars) ;
     void setAllVars(Set<Variable> inputVars);
     Set<Variable> getAllVars();
     void addLabel(Label label, Op op);

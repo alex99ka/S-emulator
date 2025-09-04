@@ -57,7 +57,13 @@ public class OpConstantAssigment extends AbstractOpBasic  {
     }
     @Override
     public String getRepresentation() {
+        return String.format("%s ← %d", getVariable().getRepresentation(), constant);
+    }
+
+    @Override
+    public String getUniqRepresentation() {
         return String.format("%s ← %d", getVariable().getRepresentation(), constant)+ getFather();
+
     }
 
     @Override

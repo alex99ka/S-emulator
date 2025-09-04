@@ -6,6 +6,8 @@ import semulator.execution.ProgramExecutorImpl;
 import semulator.program.*;
 //import engine.Statistics;
 import semulator.input.XmlTranslator.Factory;
+import semulator.statistics.Statistics;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -24,6 +26,7 @@ public class ConsoleUI {
         File file;
         String NPL = "No program loaded. Please load a program first.";
         Scanner scanner = new Scanner(System.in);
+        Statistics stats = new Statistics();
 
         while (!exit) {
             Menu();
@@ -41,11 +44,21 @@ public class ConsoleUI {
                     try {
                         System.out.print("Enter XML full file path: ");
                         String filePath = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                        if(!filePath.endsWith(".xml")) {
+                            System.out.println("please provide a valid XML file path");
+                            break;
+                        }
                         file = new File(filePath);
-                        program = factory.loadProgramFromXml(file);
+                        try {
+                            program = factory.loadProgramFromXml(file);
+                        }
+                        catch (Exception e) {
+                            System.out.println("Error loading program: " + e.getMessage());
+                            break;
+                        }
                         programCopy = program.myClone();
                         System.out.println("Program loaded successfully.");
-                        //Statistics.reset();
+                        stats.reset();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -115,17 +128,18 @@ public class ConsoleUI {
                     ProgramExecutor executor = new ProgramExecutorImpl(programCopy);
 
                     List<Long> initVars= program.getInputFromUser();
-                    Long y= executor.run(initVars);
-//                case 5:
-//                    try {
-//                        Collection<Statistics> programStats = Statistics.loadStatisticsIndividually();
-//                        for(Statistics stats: programStats){
-//                            System.out.println(stats);
-//                        }
-//                    } catch (Exception e) {
-//                        System.out.println("Error loading statistics: " + e.getMessage());
-//                    }
-//                    break;
+                    stats.setRunDegree(selectedDegree);
+                    stats.addUserInput(initVars);
+                    stats.setRes( executor.run(initVars,stats));
+                    stats.incRun();
+                    break;
+                     case 5:
+                         if(program==null){
+                                System.out.println(NPL);
+                                break;
+                         }
+                            stats.printStats();
+                    break;
                 case 6:
                     exit = true;
                     System.out.println("Exiting S-Emulator IDE. Farewell!");

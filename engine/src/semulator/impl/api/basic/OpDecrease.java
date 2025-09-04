@@ -56,6 +56,10 @@ public class OpDecrease extends AbstractOpBasic {
 
     @Override
     public String getRepresentation() {
+        return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation()) ;
+    }
+    @Override
+    public String getUniqRepresentation() {
         return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
     }
 

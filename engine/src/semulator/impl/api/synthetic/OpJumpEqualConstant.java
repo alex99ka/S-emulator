@@ -160,6 +160,10 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
 
     @Override
     public String getRepresentation() {
+        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation());
+    }
+    @Override
+    public String getUniqRepresentation() {
         return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation()) + getFather();
     }
 }

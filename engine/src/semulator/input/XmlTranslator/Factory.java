@@ -88,7 +88,9 @@ public class Factory
 
         // Prepare a set to track all variable names used (for initialization)
         Set<Variable> allVars = new HashSet<>();
-        List<Variable> inputVars = new ArrayList<>();
+        Set<Variable> inputVars = new TreeSet<>(
+                Comparator.comparing(Variable::getRepresentation)
+        );
         Label lbl;
         String labelRegex = "L\\d+"; // regex pattern for valid labels like L1, L2, etc.
         int i = 1;
@@ -124,7 +126,7 @@ public class Factory
 
             allVars.add(curVar);  // track this variable for initialization
             if(// if it's an input variable, track in inputVars list too
-                    vType == VariableType.INPUT && !inputVars.contains(curVar)) {
+                    vType.equals( VariableType.INPUT))  {
                 inputVars.add(curVar);
             }
 
@@ -264,7 +266,6 @@ public class Factory
         allVars.add(Variable.RESULT);
         program.addLabelSet(definedLabels);
         //sort input vars by there get representation method
-        inputVars.sort(Comparator.comparing(Variable::getRepresentation));
             program.setInputVars(inputVars);
             program.setAllVars(allVars);
             return program;

@@ -47,7 +47,17 @@ public class OpNeutral extends AbstractOpBasic
     @Override
     public String getRepresentation()
     {
-        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
+        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation());
+    }
+    @Override
+    public String getUniqRepresentation() {
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather() + " " + lbl;
+
     }
 }
 

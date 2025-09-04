@@ -94,6 +94,10 @@ public class OpZeroVariable extends AbstractOpBasic  {
 
     @Override
     public String getRepresentation() {
+        return String.format("%s ← 0", getVariable().getRepresentation()) ;
+    }
+    @Override
+    public String getUniqRepresentation() {
         return String.format("%s ← 0", getVariable().getRepresentation()) + getFather();
     }
 }

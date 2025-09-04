@@ -55,6 +55,9 @@ public class SprogramImpl implements SProgram {
     public void setInputVars(List<Variable> vars) {
         this.inputVars = vars;
     }
+    public void setInputVars(Set<Variable> vars) {
+        this.inputVars = new ArrayList<>(vars);
+    }
     public int getOpsIndex()
     {
         return OpListindex;
@@ -120,9 +123,9 @@ public class SprogramImpl implements SProgram {
     public void ChangeOpIndex(Op currentOp) {
       if (currentOp==null)
             throw(new IllegalArgumentException("the op is null"));
-      else if (opList.stream().anyMatch(op -> op.getRepresentation().equals(currentOp.getRepresentation())))
+      else if (opList.stream().anyMatch(op -> op.getUniqRepresentation().equals(currentOp.getUniqRepresentation())))
           OpListindex = opList.indexOf(opList.stream()
-                  .filter(op -> op.getRepresentation().equals(currentOp.getRepresentation()))
+                  .filter(op -> op.getUniqRepresentation().equals(currentOp.getUniqRepresentation()))
                   .findFirst().get());
       else
           throw(new IllegalArgumentException("the op is not in the program"));
@@ -243,7 +246,6 @@ public class SprogramImpl implements SProgram {
 
     List<Long> numbers = new ArrayList<>();
 
-    // מפרקים לפי פסיקים בלבד
     String[] tokens = line.split(",");
 
     for (String token : tokens) {

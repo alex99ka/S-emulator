@@ -45,7 +45,7 @@ public abstract class AbstractOpBasic implements Op {
         else
             type = "S";
         sb.append("<<< ");
-        sb.append(String.format("#%d (S)[%5s] %S (%d)  ",index ,lbl,getRepresentation(),getCycles()));
+        sb.append(String.format("#%d (%S)[%5s] %S (%d)  ",index ,type,lbl,getRepresentation(),getCycles()));
         rep = sb.toString();
         return rep;
     }
@@ -121,5 +121,11 @@ public abstract class AbstractOpBasic implements Op {
      public String getFatherRep() {
         return father;
     }
+
+    @Override
+    public String getUniqRepresentation() {
+        return "";
+    }
+
 
 }

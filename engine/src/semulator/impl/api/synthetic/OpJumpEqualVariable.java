@@ -63,7 +63,6 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
             case 0: {
                 return List.of(this);
             }
-
             case 1: {
 
                 Label Lstart    = program.newUniqueLabel();
@@ -82,7 +81,7 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 }
                 Op a2 = new OpAssignment(z2, vTag,repToChild(program));
 
-                Op anchorStart = new OpNeutral(v,Lstart,repToChild(program));
+                Op anchorStart = new OpNeutral(z2,Lstart,repToChild(program));
                 program.addLabel(Lstart, anchorStart);
 
                 Op jz1 = new OpJumpZero(z1, LcheckZ2,repToChild(program));
@@ -112,6 +111,7 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 ops.add(anchorCheck);
                 ops.add(jzEqual);
                 ops.add(anchorNotEq);
+                break;
 
             }
 
@@ -130,16 +130,16 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), a1);
                 }
-                List<Op> assign1 = a1.expand(1, program);
+                List<Op> assign1 = a1.expand(extensionLevel-1, program);
 
                 Op a2 = new OpAssignment(z2, vTag,repToChild(program));
-                List<Op> assign2 = a2.expand(1, program);
+                List<Op> assign2 = a2.expand(extensionLevel-1, program);
 
-                Op anchorStart = new OpNeutral(v,repToChild(program));
+                Op anchorStart = new OpNeutral(v,Lstart, repToChild(program));
                 program.addLabel(Lstart, anchorStart);
 
                 Op jz1 = new OpJumpZero(z1, LcheckZ2,repToChild(program));
-                List<Op> jz1ext = jz1.expand(1, program);
+                List<Op> jz1ext = jz1.expand(extensionLevel-1, program);
 
                 Op jz2 = new OpJumpZero(z2, LnotEqual,repToChild(program));
                 List<Op> jz2ext = jz2.expand(1, program);
@@ -148,15 +148,15 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 Op d2 = new OpDecrease(z2,repToChild(program));
 
                 Op goStart = new OpGoToLabel(program.newWorkVar(), Lstart,repToChild(program));
-                List<Op> goExt = goStart.expand(1, program);
+                List<Op> goExt = goStart.expand(extensionLevel-1, program);
 
-                Op anchorCheck = new OpNeutral(v,repToChild(program));
+                Op anchorCheck = new OpNeutral(v,LcheckZ2,repToChild(program));
                 program.addLabel(LcheckZ2, anchorCheck);
 
                 Op jzEqual = new OpJumpZero(z2, targetLabel,repToChild(program));
                 List<Op> jzEqExt = jzEqual.expand(1, program);
 
-                Op anchorNotEq = new OpNeutral(v,repToChild(program));
+                Op anchorNotEq = new OpNeutral(z2,LnotEqual,repToChild(program));
                 program.addLabel(LnotEqual, anchorNotEq);
 
                 ops.addAll(assign1);
@@ -170,16 +170,22 @@ public class OpJumpEqualVariable extends AbstractOpBasic {
                 ops.add(anchorCheck);
                 ops.addAll(jzEqExt);
                 ops.add(anchorNotEq);
-
+                break;
             }
-                return ops;
         }
+        return ops;
     }
 
 
 
-            @Override
-        public String getRepresentation() {
+    @Override
+    public String getRepresentation()
+    {
+        return String.format("if %s = %s GOTO %s", getVariable().getRepresentation(), comparableVariable.getRepresentation(), JEConstantLabel.getLabelRepresentation());
+    }
+    @Override
+    public String getUniqRepresentation()
+    {
         return String.format("if %s = %s GOTO %s", getVariable().getRepresentation(), comparableVariable.getRepresentation(), JEConstantLabel.getLabelRepresentation()) + getFather();
     }
 }

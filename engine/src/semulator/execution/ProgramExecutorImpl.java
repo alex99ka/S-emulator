@@ -4,6 +4,7 @@ import semulator.impl.api.skeleton.Op;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
+import semulator.statistics.Statistics;
 import semulator.variable.Variable;
 
 import java.lang.reflect.Array;
@@ -17,7 +18,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
      // the 4th command!
 
 
-    public long run(List<Long> inputs) {
+    public long run(List<Long> inputs, Statistics stats) {
         program.createFirstSnap(inputs);  // enter the vals from the user to the input vars
         Set<Variable> allVars = new TreeSet<>(Comparator.comparing(Variable::getRepresentation));
         allVars.addAll(program.getAllVars());
@@ -60,9 +61,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
             }
         }
         System.out.println("the program ran for: " + program.calculateCycles() + "cycles");
-
-
-
+        stats.setCycles(program.calculateCycles());
         return program.getVariableValue(Variable.RESULT);
     }
 

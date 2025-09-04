@@ -8,14 +8,14 @@ public enum FixedLabel implements Label {
 
         @Override
         public Label myClone() {
-            return null;
+            return this;
         }
     },
     EMPTY{
         @Override
         public String getLabelRepresentation() {return "";}
         public   Label myClone() {
-            return null;
+            return this;
         }
     };
 

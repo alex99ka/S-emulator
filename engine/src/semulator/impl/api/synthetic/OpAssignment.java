@@ -58,7 +58,12 @@ public class OpAssignment extends AbstractOpBasic  {
     }
     @Override
     public String getRepresentation() {
+        return String.format("%s ← %s", getVariable().getRepresentation(), outSideVar.getRepresentation()) ;
+    }
+    @Override
+    public String getUniqRepresentation() {
         return String.format("%s ← %s", getVariable().getRepresentation(), outSideVar.getRepresentation()) + getFather();
+
     }
 
 
