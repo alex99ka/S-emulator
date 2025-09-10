@@ -9,5 +9,5 @@ public interface Variable  {
 
     Variable RESULT = new VariableImpl(VariableType.RESULT, 0);
 
-    //implent deep clone method for variable withthe super.clone() method
+    //implement deep clone method for variable with the super.clone() method
 }

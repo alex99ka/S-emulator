@@ -10,7 +10,7 @@ public interface ExpandContext {
     /** מחזיר משתנה עבודה חדש בפורמט z<number> (ייחודי), מאופס ומוסף ל-currSnap ולסט המשתנים. */
     Variable newWorkVar();
 
-    void AddOpWithNewLabel(Op op);
+    void addOpWithNewLabel(Op op);
 
 
 }

@@ -40,7 +40,7 @@ public class OpIncrease extends AbstractOpBasic {
 
         return FixedLabel.EMPTY;
     }
-    public List<Op> expand(int extensionLevel, SProgram program)
+    public List<Op> expand(int ignoredExtensionLevel, SProgram ignoredProgram)
     {
         return List.of(this);
     }
@@ -57,7 +57,12 @@ public class OpIncrease extends AbstractOpBasic {
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("%s ← %s + 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFatherRep() + lbl;
 
     }
 

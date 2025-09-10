@@ -56,7 +56,7 @@ public class OpNeutral extends AbstractOpBasic
             lbl = "";
         else
             lbl = " [" + getLabel().getLabelRepresentation() + "]";
-        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather() + " " + lbl;
+        return String.format("%s ← %s", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFatherRep() + " " + lbl;
 
     }
 }

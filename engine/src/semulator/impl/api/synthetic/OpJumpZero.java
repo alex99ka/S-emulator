@@ -1,4 +1,5 @@
 package semulator.impl.api.synthetic;
+
 import semulator.impl.api.basic.OpJumpNotZero;
 import semulator.impl.api.basic.OpNeutral;
 import semulator.impl.api.skeleton.AbstractOpBasic;
@@ -8,41 +9,38 @@ import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class OpJumpZero extends AbstractOpBasic  {
-    Label JZlabel;
-    public OpJumpZero( Variable variable, Label JZlabel) {
+    Label jZLabel;
+    public OpJumpZero( Variable variable, Label jZLabel) {
         super(OpData.JUMP_ZERO, variable);
-        this.JZlabel = JZlabel;
+        this.jZLabel = jZLabel;
     }
-    public OpJumpZero( Variable variable, Label JZlabel, String creatorRep) {
+    public OpJumpZero(Variable variable, Label jZLabel, String creatorRep) {
         super(OpData.JUMP_ZERO, variable, FixedLabel.EMPTY, creatorRep);
-        this.JZlabel = JZlabel;
+        this.jZLabel = jZLabel;
     }
 
-    public OpJumpZero( Variable variable, Label label, Label JZlabel) {
+    public OpJumpZero( Variable variable, Label label, Label jZLabel) {
         super(OpData.JUMP_ZERO, variable, label);
-        this.JZlabel = JZlabel;
+        this.jZLabel = jZLabel;
     }
-    public OpJumpZero( Variable variable, Label label, Label JZlabel, String creatorRep) {
+    public OpJumpZero(Variable variable, Label label, Label jZLabel, String creatorRep) {
         super(OpData.JUMP_ZERO, variable, label, creatorRep);
-        this.JZlabel = JZlabel;
+        this.jZLabel = jZLabel;
     }
 
     @Override
     public Label execute(SProgram program) {
         program.increaseCycleCounter(getCycles());
-        return program.getVariableValue(getVariable()) == 0L ? JZlabel: FixedLabel.EMPTY;
+        return program.getVariableValue(getVariable()) == 0L ? jZLabel : FixedLabel.EMPTY;
     }
     //implementation of deep clone
     @Override
     public Op myClone() {
-        Op op = new OpJumpZero(getVariable().myClone(), getLabel().myClone(), JZlabel.myClone());
+        Op op = new OpJumpZero(getVariable().myClone(), getLabel().myClone(), jZLabel.myClone());
         op.setExpandIndex(getMyExpandIndex());
         return op;
     }
@@ -64,7 +62,7 @@ public class OpJumpZero extends AbstractOpBasic  {
                 }
 
                 Variable dummy = program.newWorkVar();
-                Op go = new OpGoToLabel(dummy, JZlabel,repToChild(program));
+                Op go = new OpGoToLabel(dummy, jZLabel,repToChild(program));
 
                 Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
                 program.addLabel(skip, anchor);
@@ -85,7 +83,7 @@ public class OpJumpZero extends AbstractOpBasic  {
                 ops.add(jnz);
 
                 Variable dummy = program.newWorkVar();
-                Op go = new OpGoToLabel(dummy, JZlabel,repToChild(program));
+                Op go = new OpGoToLabel(dummy, jZLabel,repToChild(program));
                 ops.addAll(go.expand(1, program));
 
                 Op anchor = new OpNeutral(getVariable(), skip,repToChild(program));
@@ -101,10 +99,15 @@ public class OpJumpZero extends AbstractOpBasic  {
 
     @Override
     public String getRepresentation() {
-        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), JZlabel.getLabelRepresentation()) ;
+        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), jZLabel.getLabelRepresentation()) ;
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), JZlabel.getLabelRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("if %s = 0 GOTO %s", getVariable().getRepresentation(), jZLabel.getLabelRepresentation()) + getFatherRep() + lbl;
     }
 }

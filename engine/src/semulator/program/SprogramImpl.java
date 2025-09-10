@@ -2,10 +2,8 @@ package semulator.program;
 
 import semulator.execution.ExecutionContext;
 import semulator.execution.ExecutionContextImpl;
-import semulator.execution.ExpandContext;
 import semulator.impl.api.skeleton.AbstractOpBasic;
 import semulator.impl.api.skeleton.Op;
-import semulator.impl.api.skeleton.OpType;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.variable.Variable;
@@ -16,7 +14,7 @@ public class SprogramImpl implements SProgram {
     private final String name;
     private  List<Op> opList;
     private int cycles;
-    private int OpListindex;
+    private int opListIndex;
     private List<Variable> inputVars;
     private ExecutionContextImpl context;
     private Set<Variable> variables;
@@ -27,7 +25,7 @@ public class SprogramImpl implements SProgram {
     public SprogramImpl(String name) {
         this.name = name;
         opList = new ArrayList<>();
-        OpListindex = 0;
+        opListIndex = 0;
         context = new ExecutionContextImpl();
         cycles = 0;
         variables = new HashSet<>();
@@ -49,7 +47,7 @@ public class SprogramImpl implements SProgram {
         context.getLabelMap().put(label,op);
     }
     public void createFirstSnap(List<Long> input) {
-        context.CreateSnap(this, input);
+        context.createSnap(this, input);
     }
 
     public void setInputVars(List<Variable> vars) {
@@ -60,7 +58,7 @@ public class SprogramImpl implements SProgram {
     }
     public int getOpsIndex()
     {
-        return OpListindex;
+        return opListIndex;
     }
     public int getOpsIndex(Op currentOp)
     {
@@ -116,7 +114,7 @@ public class SprogramImpl implements SProgram {
     }
 
     public Op getNextOp() {
-        return opList.get(OpListindex++);
+        return opList.get(opListIndex++);
     }
 
     @Override
@@ -124,19 +122,19 @@ public class SprogramImpl implements SProgram {
       if (currentOp==null)
             throw(new IllegalArgumentException("the op is null"));
       else if (opList.stream().anyMatch(op -> op.getUniqRepresentation().equals(currentOp.getUniqRepresentation())))
-          OpListindex = opList.indexOf(opList.stream()
+          opListIndex = opList.indexOf(opList.stream()
                   .filter(op -> op.getUniqRepresentation().equals(currentOp.getUniqRepresentation()))
                   .findFirst().get());
       else
           throw(new IllegalArgumentException("the op is not in the program"));
-      OpListindex++; //!!!!!!!!!!! god damn it
+      opListIndex++; //!!!!!!!!!!! god damn it
     }
     @Override
-    public Long getVariableValue(Variable var) {
-        return context.getVariableValue(var);
+    public Long getVariableValue(Variable variable) {
+        return context.getVariableValue(variable);
     }
     @Override
-    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {context.AddSnap(vars, vals);}
+    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {context.addSnap(vars, vals);}
 
     @Override
     public Op getOpByLabel(Label label) {
@@ -148,11 +146,11 @@ public class SprogramImpl implements SProgram {
     public SProgram myClone() {
         SProgram newProgram = new SprogramImpl(this.name);
         for (Op op : this.opList) {
-            newProgram.addOp((Op) op.myClone()); // Assuming Op is immutable or properly cloned
+            newProgram.addOp( op.myClone()); // Assuming Op is immutable or properly cloned
         }
         newProgram.setInputVars(new ArrayList<>(this.inputVars));
         newProgram.setAllVars(new HashSet<>(this.variables));
-        newProgram.SetContext(context);
+        newProgram.setContext(context);
         return newProgram;
     }
     @Override
@@ -177,12 +175,9 @@ public class SprogramImpl implements SProgram {
     {
         int i;
         ArrayList<String> res = new ArrayList<>();
-        ArrayList <String> inputVars = new ArrayList<>();
+        ArrayList <String> stringInputVars = new ArrayList<>();
         AbstractOpBasic currentOp;
-        String type;
-        String label;
-        String opRep;
-        String cycles;
+
         boolean exitLabel=false;
         for (i=0; i<opList.size(); i++)
         {
@@ -191,12 +186,12 @@ public class SprogramImpl implements SProgram {
             res.add(currentOp.repToChild(this).replaceFirst("<<<", ""));
         }
          for (Variable v : this.inputVars) {
-                inputVars.add(v.getRepresentation());
+                stringInputVars.add(v.getRepresentation());
          }
 
          System.out.println("Program: "+name+"\n");
          System.out.println("Program Variables: \n");
-         System.out.println(String.join(" ", inputVars)+"\n");
+         System.out.println(String.join(" ", stringInputVars)+"\n");
          System.out.println("Program Labels: \n");
          for (Label l : context.getLabelMap().keySet()) {
                 if(l.equals(FixedLabel.EXIT))
@@ -252,13 +247,14 @@ public class SprogramImpl implements SProgram {
         try {
             long num = Long.parseLong(token.trim());
             numbers.add(num);
-        } catch (NumberFormatException e) {}
+        } catch (NumberFormatException e) {//ignore invalid input}
+        }
     }
         return numbers;
     }
 
     @Override
-    public void SetContext(ExecutionContext context) {
+    public void setContext(ExecutionContext context) {
         this.context = new ExecutionContextImpl(context);
     }
 

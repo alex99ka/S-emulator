@@ -1,7 +1,6 @@
 package semulator.program;
 
 import semulator.execution.ExecutionContext;
-import semulator.execution.ExpandContext;
 import semulator.impl.api.skeleton.Op;
 import semulator.label.Label;
 import semulator.variable.Variable;
@@ -24,9 +23,9 @@ public interface SProgram
 
     int calculateCycles();
     void increaseCycleCounter(int cycles);
-    public Label newUniqueLabel();
+    Label newUniqueLabel();
     Variable GetNextVar(int j);
-    public void createFirstSnap(List<Long> input);
+    void createFirstSnap(List<Long> input);
     int getAmountOfVars();
     Long getVariableValue(Variable var);
     void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals);
@@ -34,19 +33,19 @@ public interface SProgram
     Op getNextOp();
     void ChangeOpIndex(Op currentOp);
     int getOpsIndex();
-    public int getOpsIndex(Op currentOp); // overload for external use for father rep
+    int getOpsIndex(Op currentOp); // overload for external use for father rep
     void setInputVars(List<Variable> vars);
-    public void setInputVars(Set<Variable> vars) ;
+    void setInputVars(Set<Variable> vars) ;
     void setAllVars(Set<Variable> inputVars);
     Set<Variable> getAllVars();
     void addLabel(Label label, Op op);
     SProgram myClone();
     int getProgramDegree();
     void expandProgram(int degree);
-    public Variable newWorkVar();
+     Variable newWorkVar();
     void print();
      Map<Variable, Long> getCurrSnap();
      List<Long> getInputFromUser();
      int getExapndIndex();
-     void SetContext(ExecutionContext context);
+     void setContext(ExecutionContext context);
 }

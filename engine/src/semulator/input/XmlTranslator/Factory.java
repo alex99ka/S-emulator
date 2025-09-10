@@ -22,18 +22,40 @@ public class Factory
     List<XOp> sInstructions;
     SProgram program;
 
+    public SProgram loadProgramFromXml(File xmlFile) throws IllegalArgumentException {
+        try {
+            xProgram = LoadXml(xmlFile);
+        } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+            throw e;
+        }
+        try {
+            ValidateLabels();
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+        try {
+            buildProgram();
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+        return program;
 
-    public SProgram loadProgramFromXml(File xmlFile) throws Exception
-    {
-        // 1. Basic file validation (exists and .xml extension)
+    }
+    //opens the xml file and loads it into an XProgram object
+    private XProgram LoadXml(File xmlFile) throws IllegalArgumentException {
         if (xmlFile == null||!xmlFile.getName().toLowerCase().endsWith(".xml")) {
+            assert xmlFile != null;
             throw new IllegalArgumentException("Invalid file type: " + xmlFile.getName()
                     + " (expected .xml)");
         }
         if ( !xmlFile.exists() || !xmlFile.isFile()) {
             throw new IllegalArgumentException("XML file not found: " + xmlFile);
         }
-
         // 2. Unmarshal XML into SProgram object using JAXB
         try {
             JAXBContext context = JAXBContext.newInstance(XProgram.class);
@@ -42,8 +64,10 @@ public class Factory
         } catch (JAXBException e) {
             throw new RuntimeException("Failed to parse XML: " + e.getMessage(), e);
         }
-
-        // 3. Program semantic validation: check that all referenced labels exist
+        return xProgram;
+    }
+    // Validates that all labels referenced in jump instructions exist in the program
+    private void ValidateLabels()  throws IllegalArgumentException{
         sInstructions = xProgram.getInstructions();
         if (sInstructions == null || sInstructions.isEmpty()) {
             throw new IllegalArgumentException("Invalid program: no instructions defined.");
@@ -52,10 +76,10 @@ public class Factory
         definedLabels = new LinkedHashSet<>();
         for (XOp inst : sInstructions) {
             if (inst.getLabel() != null) {
-                if (inst.getLabel().equals( FixedLabel.EXIT.getLabelRepresentation()))
+                if (inst.getLabel().equals(FixedLabel.EXIT.getLabelRepresentation()))
                     definedLabels.add(FixedLabel.EXIT);
                 else
-                    definedLabels.add(new LabelImpl( inst.getLabel()));
+                    definedLabels.add(new LabelImpl(inst.getLabel()));
             }
         }
         // Check all instruction arguments for label references that are not defined
@@ -71,8 +95,7 @@ public class Factory
                         // "EXIT" is considered a special target (program termination), skip existence check
                         continue;
                     }
-                    if (!definedLabels.contains(new LabelImpl(argValue)))
-                    {
+                    if (!definedLabels.contains(new LabelImpl(argValue))) {
                         // Found a jump to a label that doesn't exist in the program
                         throw new IllegalArgumentException("Invalid program: jump to undefined label \""
                                 + argValue + "\" in instruction \""
@@ -81,11 +104,12 @@ public class Factory
                 }
             }
         }
+    }
+    // 4. Build internal Program object
+    public void buildProgram( ) throws IllegalArgumentException
+    {
 
-        // 4. Build internal Program object
         program = new SprogramImpl(xProgram.getName());
-
-
         // Prepare a set to track all variable names used (for initialization)
         Set<Variable> allVars = new HashSet<>();
         Set<Variable> inputVars = new TreeSet<>(
@@ -97,7 +121,6 @@ public class Factory
 
         // Convert each SInstruction to an Op object and add to program
         for (XOp inst : sInstructions) {
-            String cmdType = inst.getType();    // "basic" or "synthetic"
             String cmdName = inst.getName();    // e.g., INCREASE, ZERO_VARIABLE, etc.
             String varName = inst.getVariable();  // e.g., "x1", "y", "z2"
             String labelName = inst.getLabel();   // may be null
@@ -130,7 +153,7 @@ public class Factory
                 inputVars.add(curVar);
             }
 
-            Op op = null;  // will point to a new instruction object
+            Op op;  // will point to a new instruction object
             // Determine which specific Op subclass to instantiate based on the command name
             switch (cmdName) {
                 case "INCREASE":
@@ -268,8 +291,7 @@ public class Factory
         //sort input vars by there get representation method
             program.setInputVars(inputVars);
             program.setAllVars(allVars);
-            return program;
-        }
+    }
 
 
 

@@ -8,12 +8,9 @@ import semulator.impl.api.skeleton.Op;
 import semulator.impl.api.skeleton.OpData;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
-import semulator.label.LabelImpl;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OpConstantAssigment extends AbstractOpBasic  {
@@ -62,33 +59,37 @@ public class OpConstantAssigment extends AbstractOpBasic  {
 
     @Override
     public String getUniqRepresentation() {
-        return String.format("%s ← %d", getVariable().getRepresentation(), constant)+ getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("%s ← %d", getVariable().getRepresentation(), constant)+ getFatherRep() +lbl;
 
     }
 
     @Override
     public List<Op> expand(int extensionLevel, SProgram program) {
         List<Op> ops = new ArrayList<>();
-
+        Variable variable = getVariable();
+        long k = constant; // the constant to assign
 
         switch (extensionLevel) {
             case 0: {
                 return List.of(this);
             }
             case 1: {
-                Variable v = getVariable();
-                long K = constant;  // הקבוע
                 Variable z1 = program.newWorkVar();
                 Label loop = program.newUniqueLabel();
                 Label after = program.newUniqueLabel();
 
-                Op zeroV = new OpZeroVariable(v, getLabel(),repToChild(program));
+                Op zeroV = new OpZeroVariable(variable, getLabel(),repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), zeroV);
                 }
                 ops.add(zeroV);
 
-                for (long i = 0; i < K; i++) {
+                for (long i = 0; i < k; i++) {
                     ops.add(new OpIncrease(z1,repToChild(program)));
                 }
 
@@ -99,10 +100,10 @@ public class OpConstantAssigment extends AbstractOpBasic  {
                 program.addLabel(loop, decZ1);
                 ops.add(decZ1);
 
-                ops.add(new OpIncrease(v,repToChild(program)));
+                ops.add(new OpIncrease(variable,repToChild(program)));
                 ops.add(new OpJumpNotZero(z1, loop,repToChild(program)));
                 //end of loop
-                Op end = new OpNeutral(v, after,repToChild(program));
+                Op end = new OpNeutral(variable, after,repToChild(program));
                 program.addLabel(after, end);
                 ops.add(end);
 
@@ -110,19 +111,17 @@ public class OpConstantAssigment extends AbstractOpBasic  {
             }
 
             default: { // 2 or higher
-                Variable v = getVariable();
-                long K = constant;
                 Variable z1  = program.newWorkVar();
                 Label loop = program.newUniqueLabel();
                 Label after = program.newUniqueLabel();
 
-                Op zeroV = new OpZeroVariable(v, getLabel(),repToChild(program));
+                Op zeroV = new OpZeroVariable(variable, getLabel(),repToChild(program));
                 if (getLabel() != null && !getLabel().equals(FixedLabel.EMPTY)) {
                     program.addLabel(getLabel(), zeroV);
                 }
                 ops.addAll(zeroV.expand(extensionLevel - 1, program));
 
-                for (long i = 0; i < K; i++) {
+                for (long i = 0; i < k; i++) {
                     ops.add(new OpIncrease(z1,repToChild(program)));
                 }
 
@@ -133,10 +132,10 @@ public class OpConstantAssigment extends AbstractOpBasic  {
                 program.addLabel(loop, decZ1);
                 ops.add(decZ1);
 
-                ops.add(new OpIncrease(v,repToChild(program)));
+                ops.add(new OpIncrease(variable,repToChild(program)));
                 ops.add(new OpJumpNotZero(z1, loop,repToChild(program))); // בסיסי
 
-                Op end = new OpNeutral(v, after,repToChild(program));
+                Op end = new OpNeutral(variable, after,repToChild(program));
                 program.addLabel(after, end);
                 ops.add(end);
 

@@ -6,9 +6,8 @@ import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.statistics.Statistics;
 import semulator.variable.Variable;
-
-import java.lang.reflect.Array;
 import java.util.*;
+
 
 public class ProgramExecutorImpl implements ProgramExecutor {
     SProgram program;
@@ -25,12 +24,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         Op current = program.getNextOp();
         while (current != null) {
             Label next = current.execute(program);
-            System.out.println(current.repToChild(program));
-            for (Variable v: allVars)
-                System.out.print("| " + v.getRepresentation() + " = " +program.getVariableValue(v) + " |"); //DEBUG
-            System.out.println("\n");
-
-            if (next.equals(FixedLabel.EXIT)) {
+                 if (next.equals(FixedLabel.EXIT)) {
                 break;
             } else if (next.equals( FixedLabel.EMPTY )) {
                 current = program.getNextOp();
@@ -65,7 +59,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         return program.getVariableValue(Variable.RESULT);
     }
 
-    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {program.AddSnap(vars, vals);}
+    public void addSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {program.AddSnap(vars, vals);}
 
 
 

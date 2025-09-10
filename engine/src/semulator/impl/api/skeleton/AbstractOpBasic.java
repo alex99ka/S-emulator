@@ -12,9 +12,7 @@ public abstract class AbstractOpBasic implements Op {
     private int expandIndex = - 1;
     protected int myExpandIndex = -1;
 
-    public String getFather() {
-        return father;
-    }
+
     protected int  getMyExpandIndex() {
         return myExpandIndex;
     }

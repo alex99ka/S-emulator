@@ -10,46 +10,43 @@ import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class OpJumpEqualConstant extends AbstractOpBasic {
-    Label JEConstantLabel;
+    Label jEConstantLabel;
     Long constant;
-    public OpJumpEqualConstant( Variable variable, Label JEConstantLabel, Long constantValue) {
+    public OpJumpEqualConstant(Variable variable, Label jEConstantLabel, Long constantValue) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable);
-        this.JEConstantLabel = JEConstantLabel;
+        this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
-    public OpJumpEqualConstant( Variable variable, Label JEConstantLabel, Long constantValue, String creatorRep) {
+    public OpJumpEqualConstant(Variable variable, Label jEConstantLabel, Long constantValue, String creatorRep) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, FixedLabel.EMPTY, creatorRep);
-        this.JEConstantLabel = JEConstantLabel;
+        this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
 
-    public OpJumpEqualConstant( Variable variable, Label label, Label JEConstantLabel, Long constantValue) {
+    public OpJumpEqualConstant(Variable variable, Label label, Label jEConstantLabel, Long constantValue) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, label);
-        this.JEConstantLabel = JEConstantLabel;
+        this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
-    public OpJumpEqualConstant( Variable variable, Label label, Label JEConstantLabel, Long constantValue, String creatorRep) {
+    public OpJumpEqualConstant(Variable variable, Label label, Label jEConstantLabel, Long constantValue, String creatorRep) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, label, creatorRep);
-        this.JEConstantLabel = JEConstantLabel;
+        this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
 
     @Override
     public Label execute(SProgram program) {
         program.increaseCycleCounter(getCycles());
-        return program.getVariableValue(getVariable()).equals(constant) ? JEConstantLabel : FixedLabel.EMPTY;
+        return program.getVariableValue(getVariable()).equals(constant) ? jEConstantLabel : FixedLabel.EMPTY;
     }
     //implementation of deep clone
     @Override
     public Op myClone() {
-        Op op = new OpJumpEqualConstant(getVariable().myClone(), getLabel().myClone(), JEConstantLabel.myClone(), constant);
+        Op op = new OpJumpEqualConstant(getVariable().myClone(), getLabel().myClone(), jEConstantLabel.myClone(), constant);
         op.setExpandIndex(getMyExpandIndex());
         return op;
     }
@@ -66,7 +63,7 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Variable z1 = program.newWorkVar();
                 Variable v = getVariable();
                 long k = constant;
-                Label target   = JEConstantLabel;
+                Label target   = jEConstantLabel;
                 Label notEqLbl = program.newUniqueLabel();
 
                 // z1 = v
@@ -89,6 +86,7 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Op end = new OpNeutral(v, notEqLbl,repToChild(program));
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
+                break;
 
             }
 
@@ -96,7 +94,7 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Variable z1 = program.newWorkVar();
                 Variable v     = getVariable();
                 long k         = constant;
-                Label target   = JEConstantLabel;
+                Label target   = jEConstantLabel;
                 Label notEqLbl = program.newUniqueLabel();
 
                 Op a1 = new OpAssignment(z1, getLabel(), v,repToChild(program));
@@ -120,14 +118,14 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Op end = new OpNeutral(v, notEqLbl,repToChild(program));
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
-
+                break;
             }
 
             default: {
                 Variable z1    = program.newWorkVar();
                 Variable v     = getVariable();
                 long k  = constant;
-                Label target   = this.JEConstantLabel;
+                Label target   = this.jEConstantLabel;
                 Label notEqLbl = program.newUniqueLabel();
 
                 Op a1 = new OpAssignment(z1, getLabel(), v,repToChild(program));
@@ -151,19 +149,24 @@ public class OpJumpEqualConstant extends AbstractOpBasic {
                 Op end = new OpNeutral(v, notEqLbl,repToChild(program));
                 program.addLabel(notEqLbl, end);
                 ops.add(end);
-
-                return ops;
+                break;
             }
         }
+        return ops;
     }
 
 
     @Override
     public String getRepresentation() {
-        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation());
+        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, jEConstantLabel.getLabelRepresentation());
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, JEConstantLabel.getLabelRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("if %s = %d GOTO %s", getVariable().getRepresentation(), constant, jEConstantLabel.getLabelRepresentation()) + getFatherRep() + lbl;
     }
 }

@@ -1,6 +1,4 @@
 package semulator.variable;
-
-import java.io.Serializable;
 import java.util.Objects;
 
 public class VariableImpl implements Variable

@@ -4,7 +4,6 @@ package console;
 import semulator.execution.ProgramExecutor;
 import semulator.execution.ProgramExecutorImpl;
 import semulator.program.*;
-//import engine.Statistics;
 import semulator.input.XmlTranslator.Factory;
 import semulator.statistics.Statistics;
 
@@ -20,6 +19,7 @@ public class ConsoleUI {
     public ConsoleUI() {
         SProgram program=null;
         SProgram programCopy = null;
+        int diffDegrees;
         Factory factory = new Factory();
         System.out.println("Welcome to S-Emulator IDE");
         boolean exit = false;
@@ -90,7 +90,7 @@ public class ConsoleUI {
                         System.out.println("Program copy is not initialized. Please load a program first.");
                         break;
                     }
-                    int diffDegrees=program.getProgramDegree()-programCopy.getProgramDegree();
+                    diffDegrees=program.getProgramDegree()-programCopy.getProgramDegree();
 
                     if(expansionsRequested != diffDegrees){ // If the degree has changed, re-deploy the program
                         programCopy= program.myClone();

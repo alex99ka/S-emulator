@@ -57,7 +57,12 @@ public class OpJumpNotZero extends AbstractOpBasic {
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("IF %s!=0 GOTO %s", getVariable().getRepresentation(), jnzLabel.getLabelRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("IF %s!=0 GOTO %s", getVariable().getRepresentation(), jnzLabel.getLabelRepresentation()) + getFatherRep() + lbl;
     }
 
 }

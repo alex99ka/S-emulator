@@ -11,9 +11,9 @@ public interface ExecutionContext {
 
     Long getVariableValue(Variable v);
     Map<Label, Op> getLabelMap();
-    void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals);
+    void addSnap(ArrayList<Variable> vars, ArrayList<Long> vals);
     Map<Variable, Long> getCurrSnap();
-    List getSnapshots();
+    List<Map<Variable, Long>> getSnapshots();
 
 
 

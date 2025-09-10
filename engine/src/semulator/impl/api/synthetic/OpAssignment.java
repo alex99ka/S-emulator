@@ -7,14 +7,9 @@ import semulator.impl.api.basic.OpNeutral;
 import semulator.impl.api.skeleton.*;
 import semulator.label.FixedLabel;
 import semulator.label.Label;
-import semulator.label.LabelImpl;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-import semulator.variable.VariableImpl;
-import semulator.variable.VariableType;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OpAssignment extends AbstractOpBasic  {
@@ -62,7 +57,12 @@ public class OpAssignment extends AbstractOpBasic  {
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("%s ← %s", getVariable().getRepresentation(), outSideVar.getRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("%s ← %s", getVariable().getRepresentation(), outSideVar.getRepresentation()) + getFatherRep() +lbl;
 
     }
 
@@ -78,12 +78,12 @@ public class OpAssignment extends AbstractOpBasic  {
                 return List.of(this);
             }
             case 1: {
-                Label label1 = program.newUniqueLabel(); //loop vTag ->z1
+                Label label1 = program.newUniqueLabel(); //loop externalVar ->z1
                 Label label2 = program.newUniqueLabel(); // z1 -> v
                 Label label3 = program.newUniqueLabel(); // final
 
                 Variable v    = this.getVariable();   //
-                Variable vTag = this.outSideVar;      //
+                Variable externalVar = this.outSideVar;      //
                 Variable z1   = program.newWorkVar(); // dummy accumulator ()
 
 
@@ -92,21 +92,21 @@ public class OpAssignment extends AbstractOpBasic  {
                     program.addLabel(getLabel(), zeroV);
                 }
 
-                // 2) אם vTag==0 → דלג לסוף (label3), אחרת היכנס ללולאה הראשונה
-                Op jnzVTagEnter = new OpJumpNotZero(vTag, label1,repToChild(program));
+                // 2) אם externalVar==0 → דלג לסוף (label3), אחרת היכנס ללולאה הראשונה
+                Op jnzVTagEnter = new OpJumpNotZero(externalVar, label1,repToChild(program));
                 Op gotoEnd = new OpGoToLabel(program.newWorkVar(), label3,repToChild(program));
 
-                // 3) לולאה 1: כל עוד vTag!=0 → vTag--, z1++
-                Op decVTag_l1 = new OpDecrease(vTag, label1,repToChild(program));
-                program.addLabel(label1, decVTag_l1);
+                // 3) לולאה 1: כל עוד externalVar!=0 → externalVar--, z1++
+                Op decVTagL1 = new OpDecrease(externalVar, label1,repToChild(program));
+                program.addLabel(label1, decVTagL1);
                 Op incZ1      = new OpIncrease(z1,repToChild(program));
-                Op backL1     = new OpJumpNotZero(vTag, label1,repToChild(program));
+                Op backL1     = new OpJumpNotZero(externalVar, label1,repToChild(program));
 
-                // increase vtag and v together
-                Op decZ1_l2 = new OpDecrease(z1, label2,repToChild(program));
-                program.addLabel(label2, decZ1_l2);
+                // increase external var and v together
+                Op decZ1L2 = new OpDecrease(z1, label2,repToChild(program));
+                program.addLabel(label2, decZ1L2);
                 Op incV     = new OpIncrease(v,repToChild(program));
-                Op incVTag  = new OpIncrease(vTag,repToChild(program));
+                Op incVTag  = new OpIncrease(externalVar,repToChild(program));
                 Op backL2   = new OpJumpNotZero(z1, label2,repToChild(program));
 
                 Op endAnchor = new OpNeutral(v, label3,repToChild(program));
@@ -115,10 +115,10 @@ public class OpAssignment extends AbstractOpBasic  {
                 ops.add(zeroV);
                 ops.add(jnzVTagEnter);
                 ops.add(gotoEnd);
-                ops.add(decVTag_l1);
+                ops.add(decVTagL1);
                 ops.add(incZ1);
                 ops.add(backL1);
-                ops.add(decZ1_l2);
+                ops.add(decZ1L2);
                 ops.add(incV);
                 ops.add(incVTag);
                 ops.add(backL2);
@@ -126,7 +126,7 @@ public class OpAssignment extends AbstractOpBasic  {
                 return ops;
             }
 
-            default: { // דרגה 2+
+            default: { // 2+
                 Label label1 = program.newUniqueLabel(); //loop vTag ->z1
                 Label label2 = program.newUniqueLabel(); // z1 -> v
                 Label label3 = program.newUniqueLabel(); // final
@@ -142,25 +142,25 @@ public class OpAssignment extends AbstractOpBasic  {
                 }
                 ops.addAll(zeroV.expand(1, program));
 
-                // 2) אם vTag==0 → דלג לסוף (label3), אחרת היכנס ללולאה הראשונה
+                // if the external var is 0 go to end
                 Op jnzVTagEnter = new OpJumpNotZero(vTag, label1,repToChild(program));
                 ops.add(jnzVTagEnter);
                 Op gotoEnd = new OpGoToLabel(program.newWorkVar(), label3,repToChild(program));
                 ops.addAll(gotoEnd.expand(1, program));
 
-                // 3) לולאה 1: כל עוד vTag!=0 → vTag--, z1++
-                Op decVTag_l1 = new OpDecrease(vTag, label1,repToChild(program));
-                program.addLabel(label1, decVTag_l1);
-                ops.add(decVTag_l1);
+                //pour external var to z1
+                Op decVTagL1 = new OpDecrease(vTag, label1,repToChild(program));
+                program.addLabel(label1, decVTagL1);
+                ops.add(decVTagL1);
                 Op incZ1      = new OpIncrease(z1,repToChild(program));
                 ops.add(incZ1);
                 Op backL1     = new OpJumpNotZero(vTag, label1,repToChild(program));
                 ops.add(backL1);
 
-                // increase vtag and v together
-                Op decZ1_l2 = new OpDecrease(z1, label2,repToChild(program));
-                ops.add(decZ1_l2);
-                program.addLabel(label2, decZ1_l2);
+                // increase external var and v together
+                Op decZ1L2 = new OpDecrease(z1, label2,repToChild(program));
+                ops.add(decZ1L2);
+                program.addLabel(label2, decZ1L2);
                 Op incV     = new OpIncrease(v,repToChild(program));
                 ops.add(incV);
                 Op incVTag  = new OpIncrease(vTag,repToChild(program));

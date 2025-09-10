@@ -1,6 +1,5 @@
 package semulator.impl.api.synthetic;
 
-import semulator.execution.ProgramExecutor;
 import semulator.impl.api.basic.OpDecrease;
 import semulator.impl.api.basic.OpIncrease;
 import semulator.impl.api.basic.OpJumpNotZero;
@@ -57,16 +56,16 @@ public class OpZeroVariable extends AbstractOpBasic  {
                 return List.of(this);
             }
             default : {
-                // while (var != 0) { var-- }
+                // as long as  (var != 0) -> var-- loop
                 List<Op> ops = new ArrayList<>();
 
                 final Variable v = getVariable();
 
-                final Label L_BODY = program.newUniqueLabel();
-                final Label L_END  = program.newUniqueLabel();
+                final Label lBody = program.newUniqueLabel();
+                final Label lEnd  = program.newUniqueLabel();
 
                 // אם v != 0 → קפוץ לגוף; אחרת נפילה ל-NEXT (סיום)
-                Op jnz =new OpJumpNotZero(v, getLabel(),L_BODY,repToChild(program));
+                Op jnz =new OpJumpNotZero(v, getLabel(),lBody,repToChild(program));
                 ops.add(jnz);
                 if(getLabel() != null && getLabel() != FixedLabel.EMPTY) {
                     program.addLabel(getLabel(), jnz);
@@ -74,16 +73,16 @@ public class OpZeroVariable extends AbstractOpBasic  {
                 Variable dummy = program.newWorkVar();
                 OpIncrease inc = new OpIncrease(dummy,repToChild(program));
                 ops.add(inc); // פעולה ניטרלית לצורך ספירת מחזורים
-                Op jnzToEnd = new OpJumpNotZero(dummy, L_END,repToChild(program));
+                Op jnzToEnd = new OpJumpNotZero(dummy, lEnd,repToChild(program));
                 ops.add(jnzToEnd);
                 // גוף הלולאה
-                Op dec = new OpDecrease(v,L_BODY,repToChild(program));
-                program.addLabel(L_BODY, dec);
+                Op dec = new OpDecrease(v,lBody,repToChild(program));
+                program.addLabel(lBody, dec);
                 ops.add(dec);
-                ops.add(new OpJumpNotZero(v, L_BODY,repToChild(program)));
+                ops.add(new OpJumpNotZero(v, lBody,repToChild(program)));
 
-                Op endAnchor = new OpNeutral(v, L_END,repToChild(program));
-                program.addLabel(L_END, endAnchor);
+                Op endAnchor = new OpNeutral(v, lEnd,repToChild(program));
+                program.addLabel(lEnd, endAnchor);
                 ops.add(endAnchor);
 
                 return ops;
@@ -98,6 +97,11 @@ public class OpZeroVariable extends AbstractOpBasic  {
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("%s ← 0", getVariable().getRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("%s ← 0", getVariable().getRepresentation()) + getFatherRep() +lbl;
     }
 }

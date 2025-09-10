@@ -85,7 +85,12 @@ public class OpGoToLabel extends AbstractOpBasic {
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("GOTO %s", nextLabel.getLabelRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("GOTO %s", nextLabel.getLabelRepresentation()) + getFatherRep() + lbl;
     }
 
     public List<Op> expand() {

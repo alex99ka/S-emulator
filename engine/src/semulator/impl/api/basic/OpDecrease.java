@@ -6,8 +6,6 @@ import semulator.label.FixedLabel;
 import semulator.label.Label;
 import semulator.program.SProgram;
 import semulator.variable.Variable;
-import semulator.variable.VariableImpl;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,12 +58,17 @@ public class OpDecrease extends AbstractOpBasic {
     }
     @Override
     public String getUniqRepresentation() {
-        return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFather();
+        String lbl;
+        if (getLabel() == null || getLabel().equals(FixedLabel.EMPTY))
+            lbl = "";
+        else
+            lbl = " [" + getLabel().getLabelRepresentation() + "]";
+        return String.format("%s ← %s - 1", getVariable().getRepresentation(), getVariable().getRepresentation()) + getFatherRep() + lbl;
     }
 
 
 
-    public List<Op> expand(int extensionLevel, SProgram program, Variable papa)
+    public List<Op> expand(int ignoredExtensionLevel, SProgram ignoredProgram, Variable ignoredPapa)
     {
         return List.of(this);
     }

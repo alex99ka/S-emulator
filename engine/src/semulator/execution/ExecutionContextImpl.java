@@ -16,9 +16,9 @@ import java.util.Map;
 public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
 
 
-    private ArrayList<Map<Variable, Long>> snapshots = null; // to turn off the comment
-    public Map<Variable, Long> CurrSnap;
-    public Map<Label, Op> labelMap;
+    private ArrayList<Map<Variable, Long>> snapshots; // to turn off the comment
+    private Map<Variable, Long> currSnap;
+    private Map<Label, Op> labelMap;
 
     public int getLabelindex() {
         return labelindex;
@@ -45,7 +45,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     public ExecutionContextImpl(ExecutionContext context) {
         //create a deep copy constructor
         snapshots = new ArrayList<>(context.getSnapshots());
-        CurrSnap = new HashMap<>(context.getCurrSnap());
+        currSnap = new HashMap<>(context.getCurrSnap());
         labelMap = new HashMap<>(context.getLabelMap());
         labelindex = getLabelindex();
         workVarIndex = getWorkVarIndex();
@@ -53,7 +53,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     }
     public Map<Variable, Long> getCurrSnap()
     {
-        return Map.copyOf(CurrSnap);
+        return Map.copyOf(currSnap);
     }
 
 
@@ -65,14 +65,14 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     public ExecutionContextImpl() {
         snapshots = new ArrayList<>(); // move to another function that will handle inputs from the user
         labelMap = new HashMap<>();
-        CurrSnap = new HashMap<>();
+        currSnap = new HashMap<>();
     }
 
-
-    public List getSnapshots() {
+    @Override
+    public List<Map<Variable, Long>> getSnapshots() {
         return snapshots;
     }
-   public void CreateSnap(SProgram program,List<Long> input) {
+   public void createSnap(SProgram program, List<Long> input) {
 
         Map<Variable, Long> snap = new HashMap<>();
         Variable tmp;
@@ -87,46 +87,47 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
 
         for(Variable v : program.getAllVars()) // make sure all vars are in the snap and if not add them with value 0
         {
-            if(!snap.containsKey(v))
-                snap.put(v,0L);
+            snap.computeIfAbsent(v, k -> 0L);
         }
        snap.put(Variable.RESULT, 0L); //add the result var
        var first = Map.copyOf(snap);  // making an immutable copy
        snapshots.add(first);
-       CurrSnap = snap;
+       currSnap = snap;
     }
-    public Long getVariableValue(Variable v) {return CurrSnap.get(v);}
+    public Long getVariableValue(Variable v) {return currSnap.get(v);}
 
-    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {
+    @Override
+    public void addSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {
         if (vars.size() != vals.size()) {
             throw new IllegalArgumentException("vars and vals must have the same length");
         }
 
        for (int i  = 0; i < vals.size(); i++) {
-           CurrSnap.put(vars.get(i),vals.get(i)); // the current snapshot
+           currSnap.put(vars.get(i),vals.get(i)); // the current snapshot
         }
-        var first = Map.copyOf(CurrSnap);  // making an immutable copy
+        var first = Map.copyOf(currSnap);  // making an immutable copy
         snapshots.add(first);
     }
 
 
     @Override
     public Label newUniqueLabel() {
-        while (labelMap.containsKey(new LabelImpl(labelindex++))) {} //empty beacuse the ++ is needed
+        while (labelMap.containsKey(new LabelImpl(labelindex++))) {//ignore and just raise the index
+             } //empty beacuse the ++ is needed
         return new LabelImpl(labelindex-1);
     }
 
     @Override
     public Variable newWorkVar() {
         Variable tmp;
-        while (CurrSnap.containsKey(new VariableImpl(VariableType.WORK,workVarIndex++)));
+        while (currSnap.containsKey(new VariableImpl(VariableType.WORK,workVarIndex++)));
         tmp =  new VariableImpl(VariableType.WORK,workVarIndex++);
-        CurrSnap.put(tmp,0L);
+        currSnap.put(tmp,0L);
         return tmp;
     }
 
     @Override
-    public void AddOpWithNewLabel(Op op ) {
+    public void addOpWithNewLabel(Op op ) {
         labelMap.put(newUniqueLabel(),op);
     }
 }

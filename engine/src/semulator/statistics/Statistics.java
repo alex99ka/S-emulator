@@ -1,7 +1,4 @@
 package semulator.statistics;
-
-import semulator.variable.Variable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +28,8 @@ public class Statistics {
     public void setCycles(int cycles) {
         this.cycles = cycles;
     }
-    public void addUserInput(List<Long> inputs) { // deep copy
-        for (Long input : inputs) {
-            userInputs.add(input);
-        }
-    }
+    // deep copy
+    public void addUserInput(List<Long> inputs) {userInputs.addAll(inputs);}
     public void printStats() {
         System.out.println("Run Number: " + runNumber);
         System.out.println("Run Degree: " + runDegree);
