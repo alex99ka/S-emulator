@@ -34,9 +34,9 @@ public class OpAssignment extends AbstractOpBasic  {
 
     @Override
     public Label execute(SProgram program) {
-        Long variableValue = program.getVariableValue(outSideVar);
+        Integer variableValue = program.getVariableValue(outSideVar);
         ArrayList<Variable> vars = new ArrayList<>();
-        ArrayList<Long> vals = new ArrayList<>();
+        ArrayList<Integer> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(variableValue);
         program.AddSnap(vars,vals);

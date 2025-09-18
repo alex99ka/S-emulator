@@ -33,7 +33,7 @@ public class OpZeroVariable extends AbstractOpBasic  {
     public Label execute(SProgram program)
     {
         ArrayList<Variable> vars = new ArrayList<>();
-        ArrayList<Long> vals = new ArrayList<>();
+        ArrayList<Integer> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(0L);
         program.AddSnap(vars,vals);

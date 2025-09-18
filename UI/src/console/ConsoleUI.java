@@ -127,7 +127,7 @@ public class ConsoleUI {
                     }
                     ProgramExecutor executor = new ProgramExecutorImpl(programCopy);
 
-                    List<Long> initVars= program.getInputFromUser();
+                    List<Integer> initVars= program.getInputFromUser();
                     stats.setRunDegree(selectedDegree);
                     stats.addUserInput(initVars);
                     stats.setRes( executor.run(initVars,stats));

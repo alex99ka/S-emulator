@@ -17,7 +17,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
      // the 4th command!
 
 
-    public long run(List<Long> inputs, Statistics stats) {
+    public long run(List<Integer> inputs, Statistics stats) {
         program.createFirstSnap(inputs);  // enter the vals from the user to the input vars
         Set<Variable> allVars = new TreeSet<>(Comparator.comparing(Variable::getRepresentation));
         allVars.addAll(program.getAllVars());
@@ -45,11 +45,11 @@ public class ProgramExecutorImpl implements ProgramExecutor {
 
         program.print();
         System.out.println("the result of the program you ran is: " + program.getVariableValue(Variable.RESULT));
-        TreeMap<Variable, Long> treeMap = new TreeMap<>(
+        TreeMap<Variable, Integer> treeMap = new TreeMap<>(
                 Comparator.comparing(Variable::getRepresentation)
         );
         treeMap.putAll(program.getCurrSnap());
-        for (Map.Entry<Variable, Long> entry : treeMap.entrySet()) {
+        for (Map.Entry<Variable, Integer> entry : treeMap.entrySet()) {
             if (!entry.getKey().equals(Variable.RESULT)) {
                 System.out.println(entry.getKey().getRepresentation() + " = " + entry.getValue());
             }
@@ -59,7 +59,7 @@ public class ProgramExecutorImpl implements ProgramExecutor {
         return program.getVariableValue(Variable.RESULT);
     }
 
-    public void addSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {program.AddSnap(vars, vals);}
+    public void addSnap(ArrayList<Variable> vars, ArrayList<Integer> vals) {program.AddSnap(vars, vals);}
 
 
 

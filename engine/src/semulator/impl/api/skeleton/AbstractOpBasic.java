@@ -12,9 +12,14 @@ public abstract class AbstractOpBasic implements Op {
     private int expandIndex = - 1;
     protected int myExpandIndex = -1;
 
-
-    protected int  getMyExpandIndex() {
+    @Override
+    public int getMyExpandIndex() {
         return myExpandIndex;
+    }
+
+    @Override
+    public Op getSource() {
+        return null;
     }
 
     @Override
@@ -49,6 +54,7 @@ public abstract class AbstractOpBasic implements Op {
     }
 
     public void setExpandIndex(int index) {myExpandIndex = index;}
+
 
     //Ctors
     protected AbstractOpBasic(OpData opData, Variable variable) { //allow to create without label

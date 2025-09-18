@@ -25,10 +25,10 @@ public interface SProgram
     void increaseCycleCounter(int cycles);
     Label newUniqueLabel();
     Variable GetNextVar(int j);
-    void createFirstSnap(List<Long> input);
+    void createFirstSnap(List<Integer> input);
     int getAmountOfVars();
-    Long getVariableValue(Variable var);
-    void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals);
+    Integer getVariableValue(Variable var);
+    void AddSnap(ArrayList<Variable> vars, ArrayList<Integer> vals);
     Op getOpByLabel(Label label);
     Op getNextOp();
     void ChangeOpIndex(Op currentOp);
@@ -44,8 +44,9 @@ public interface SProgram
     void expandProgram(int degree);
      Variable newWorkVar();
     void print();
-     Map<Variable, Long> getCurrSnap();
-     List<Long> getInputFromUser();
+     Map<Variable, Integer> getCurrSnap();
+     List<Integer> getInputFromUser();
      int getExapndIndex();
      void setContext(ExecutionContext context);
+    List<Variable> getInputVars();
 }

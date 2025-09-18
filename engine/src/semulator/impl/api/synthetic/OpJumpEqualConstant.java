@@ -15,24 +15,24 @@ import java.util.List;
 
 public class OpJumpEqualConstant extends AbstractOpBasic {
     Label jEConstantLabel;
-    Long constant;
-    public OpJumpEqualConstant(Variable variable, Label jEConstantLabel, Long constantValue) {
+    Integer constant;
+    public OpJumpEqualConstant(Variable variable, Label jEConstantLabel, Integer constantValue) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable);
         this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
-    public OpJumpEqualConstant(Variable variable, Label jEConstantLabel, Long constantValue, String creatorRep) {
+    public OpJumpEqualConstant(Variable variable, Label jEConstantLabel, Integer constantValue, String creatorRep) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, FixedLabel.EMPTY, creatorRep);
         this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
 
-    public OpJumpEqualConstant(Variable variable, Label label, Label jEConstantLabel, Long constantValue) {
+    public OpJumpEqualConstant(Variable variable, Label label, Label jEConstantLabel, Integer constantValue) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, label);
         this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;
     }
-    public OpJumpEqualConstant(Variable variable, Label label, Label jEConstantLabel, Long constantValue, String creatorRep) {
+    public OpJumpEqualConstant(Variable variable, Label label, Label jEConstantLabel, Integer constantValue, String creatorRep) {
         super(OpData.JUMP_EQUAL_CONSTANT, variable, label, creatorRep);
         this.jEConstantLabel = jEConstantLabel;
         this.constant = constantValue;

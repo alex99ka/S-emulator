@@ -14,21 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpConstantAssigment extends AbstractOpBasic  {
-    Long constant;
-    public OpConstantAssigment( Variable variable, Long constant) {
+    Integer constant;
+    public OpConstantAssigment(Variable variable, Integer constant) {
         super(OpData.CONSTANT_ASSIGNMENT, variable);
         this.constant = constant;
     }
-    public OpConstantAssigment( Variable variable, Long constant, String creatorRep) {
+    public OpConstantAssigment(Variable variable, Integer constant, String creatorRep) {
         super(OpData.CONSTANT_ASSIGNMENT, variable, FixedLabel.EMPTY, creatorRep);
         this.constant = constant;
     }
 
-    public OpConstantAssigment(Variable variable, Label label,  Long constant) {
+    public OpConstantAssigment(Variable variable, Label label, Integer constant) {
         super(OpData.CONSTANT_ASSIGNMENT, variable, label);
         this.constant = constant;
     }
-    public OpConstantAssigment( Variable variable, Label label,  Long constant, String creatorRep) {
+    public OpConstantAssigment(Variable variable, Label label, Integer constant, String creatorRep) {
         super(OpData.CONSTANT_ASSIGNMENT, variable, label, creatorRep);
         this.constant = constant;
     }
@@ -36,7 +36,7 @@ public class OpConstantAssigment extends AbstractOpBasic  {
     @Override
     public Label execute(SProgram program) {
         ArrayList<Variable> vars = new ArrayList<>();
-        ArrayList<Long> vals = new ArrayList<>();
+        ArrayList<Integer> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(constant);
         program.AddSnap(vars,vals);

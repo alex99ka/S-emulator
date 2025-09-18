@@ -6,6 +6,11 @@ public class VariableImpl implements Variable
     private final VariableType type;
     private final int number;
 
+    @Override
+    public Integer getIndex() {
+        return number;
+    }
+
     public VariableImpl(VariableType type, int number) {
         this.type = type;
         this.number = number;

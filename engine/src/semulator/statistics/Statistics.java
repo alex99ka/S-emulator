@@ -6,12 +6,33 @@ public class Statistics {
 
     int runNumber;
     int runDegree;
-    List<Long> userInputs;
+    List<Integer> userInputs;
     long res;
     int cycles;
 
+    public int getRunNumber() {
+        return runNumber;
+    }
+
+    public int getRunDegree() {
+        return runDegree;
+    }
+
+    public List<Integer> getUserInputs() {
+        return userInputs;
+    }
+
+    public long getRes() {
+        return res;
+    }
+
+    public int getCycles() {
+        return cycles;
+    }
+
+
     public Statistics() {
-        userInputs = new ArrayList<>();
+        userInputs = new ArrayList<Integer>();
         runNumber = 0;
         runDegree = 0;
         res = 0;
@@ -29,7 +50,7 @@ public class Statistics {
         this.cycles = cycles;
     }
     // deep copy
-    public void addUserInput(List<Long> inputs) {userInputs.addAll(inputs);}
+    public void addUserInput(List<Integer> inputs) {userInputs.addAll(inputs);}
     public void printStats() {
         System.out.println("Run Number: " + runNumber);
         System.out.println("Run Degree: " + runDegree);

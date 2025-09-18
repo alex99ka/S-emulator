@@ -23,5 +23,7 @@
         <jarDirectory url="file://$MODULE_DIR$/src/semulator/input/jaxb" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="jaxb" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

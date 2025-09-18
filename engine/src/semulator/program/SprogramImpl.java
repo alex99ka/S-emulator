@@ -22,6 +22,10 @@ public class SprogramImpl implements SProgram {
     private int expandIndex;
 
 
+    public List<Variable> getInputVars() {
+        return inputVars;
+    }
+
     public SprogramImpl(String name) {
         this.name = name;
         opList = new ArrayList<>();
@@ -46,7 +50,7 @@ public class SprogramImpl implements SProgram {
     {
         context.getLabelMap().put(label,op);
     }
-    public void createFirstSnap(List<Long> input) {
+    public void createFirstSnap(List<Integer> input) {
         context.createSnap(this, input);
     }
 
@@ -130,11 +134,11 @@ public class SprogramImpl implements SProgram {
       opListIndex++; //!!!!!!!!!!! god damn it
     }
     @Override
-    public Long getVariableValue(Variable variable) {
+    public Integer getVariableValue(Variable variable) {
         return context.getVariableValue(variable);
     }
     @Override
-    public void AddSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {context.addSnap(vars, vals);}
+    public void AddSnap(ArrayList<Variable> vars, ArrayList<Integer> vals) {context.addSnap(vars, vals);}
 
     @Override
     public Op getOpByLabel(Label label) {
@@ -229,23 +233,23 @@ public class SprogramImpl implements SProgram {
         }
         opList = expandedList;
     }
-   public Map<Variable, Long> getCurrSnap()
+   public Map<Variable, Integer> getCurrSnap()
     {
         return context.getCurrSnap();
     }
-    public List<Long> getInputFromUser() {
+    public List<Integer> getInputFromUser() {
     System.out.println("please enter " + inputVars.size() + " inputs as numbers, separated by commas");
 
     Scanner scanner = new Scanner(System.in);
     String line = scanner.nextLine();
 
-    List<Long> numbers = new ArrayList<>();
+    List<Integer> numbers = new ArrayList<>();
 
     String[] tokens = line.split(",");
 
     for (String token : tokens) {
         try {
-            long num = Long.parseLong(token.trim());
+            Integer num = Long.parseLong(token.trim());
             numbers.add(num);
         } catch (NumberFormatException e) {//ignore invalid input}
         }

@@ -223,14 +223,14 @@ public class Factory
                 }
                 case "CONSTANT_ASSIGNMENT": {
                     String constValStr = getArgumentValue(inst, "constantValue");
-                    Long constVal = Long.parseLong(constValStr);
+                    Integer constVal = Long.parseLong(constValStr);
                     op = new OpConstantAssigment(curVar, lbl, constVal);
                     break;
                 }
                 case "JUMP_EQUAL_CONSTANT": {
                     String targetLabelName = getArgumentValue(inst, "JEConstantLabel");
                     String constValStr = getArgumentValue(inst, "constantValue");
-                    long constVal;
+                    Integer constVal;
                     try {
                         constVal = Long.parseLong(constValStr);
                     } catch (NumberFormatException e) {

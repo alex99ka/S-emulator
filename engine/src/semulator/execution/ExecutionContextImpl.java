@@ -16,8 +16,8 @@ import java.util.Map;
 public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
 
 
-    private ArrayList<Map<Variable, Long>> snapshots; // to turn off the comment
-    private Map<Variable, Long> currSnap;
+    private ArrayList<Map<Variable,Integer>> snapshots; // to turn off the comment
+    private Map<Variable, Integer> currSnap;
     private Map<Label, Op> labelMap;
 
     public int getLabelindex() {
@@ -51,7 +51,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
         workVarIndex = getWorkVarIndex();
 
     }
-    public Map<Variable, Long> getCurrSnap()
+    public Map<Variable, Integer> getCurrSnap()
     {
         return Map.copyOf(currSnap);
     }
@@ -69,12 +69,12 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
     }
 
     @Override
-    public List<Map<Variable, Long>> getSnapshots() {
+    public List<Map< Variable, Integer>> getSnapshots() {
         return snapshots;
     }
-   public void createSnap(SProgram program, List<Long> input) {
+   public void createSnap(SProgram program, List<Integer> input) {
 
-        Map<Variable, Long> snap = new HashMap<>();
+        Map<Variable, Integer> snap = new HashMap<>();
         Variable tmp;
 
         for (int i = 0; i < program.getAmountOfVars(); i++) { //fills all the input var with the input and the rest with 0
@@ -82,22 +82,22 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
             if (i < input.size())
                 snap.put(tmp, input.get(i));
             else
-                snap.put( tmp ,0L);
+                snap.put( tmp ,0);
         }
 
         for(Variable v : program.getAllVars()) // make sure all vars are in the snap and if not add them with value 0
         {
-            snap.computeIfAbsent(v, k -> 0L);
+            snap.computeIfAbsent(v, k -> 0);
         }
-       snap.put(Variable.RESULT, 0L); //add the result var
-       var first = Map.copyOf(snap);  // making an immutable copy
+       snap.put(Variable.RESULT, 0); //add the result var
+       Map <Variable,Integer> first = Map.copyOf(snap);  // making an immutable copy
        snapshots.add(first);
        currSnap = snap;
     }
-    public Long getVariableValue(Variable v) {return currSnap.get(v);}
+    public Integer getVariableValue(Variable v) {return currSnap.get(v);}
 
     @Override
-    public void addSnap(ArrayList<Variable> vars, ArrayList<Long> vals) {
+    public void addSnap(ArrayList<Variable> vars, ArrayList<Integer> vals) {
         if (vars.size() != vals.size()) {
             throw new IllegalArgumentException("vars and vals must have the same length");
         }
@@ -105,7 +105,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
        for (int i  = 0; i < vals.size(); i++) {
            currSnap.put(vars.get(i),vals.get(i)); // the current snapshot
         }
-        var first = Map.copyOf(currSnap);  // making an immutable copy
+        Map<Variable,Integer> first = Map.copyOf(currSnap);  // making an immutable copy
         snapshots.add(first);
     }
 
@@ -122,7 +122,7 @@ public class ExecutionContextImpl implements ExecutionContext, ExpandContext {
         Variable tmp;
         while (currSnap.containsKey(new VariableImpl(VariableType.WORK,workVarIndex++)));
         tmp =  new VariableImpl(VariableType.WORK,workVarIndex++);
-        currSnap.put(tmp,0L);
+        currSnap.put(tmp,0);
         return tmp;
     }
 

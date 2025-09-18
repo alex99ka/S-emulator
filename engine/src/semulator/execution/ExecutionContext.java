@@ -9,11 +9,11 @@ import java.util.Map;
 
 public interface ExecutionContext {
 
-    Long getVariableValue(Variable v);
+    Integer getVariableValue(Variable v);
     Map<Label, Op> getLabelMap();
-    void addSnap(ArrayList<Variable> vars, ArrayList<Long> vals);
-    Map<Variable, Long> getCurrSnap();
-    List<Map<Variable, Long>> getSnapshots();
+    void addSnap(ArrayList<Variable> vars, ArrayList<Integer> vals);
+    Map<Variable, Integer> getCurrSnap();
+    List<Map<@org.jetbrains.annotations.NotNull Variable, @org.jetbrains.annotations.NotNull Integer>> getSnapshots();
 
 
 

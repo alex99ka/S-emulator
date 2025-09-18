@@ -5,5 +5,5 @@ import semulator.statistics.Statistics;
 import java.util.List;
 
 public interface ProgramExecutor {
-    long run( List<Long> inputs, Statistics stats );
+    long run(List<Integer> inputs, Statistics stats );
 }

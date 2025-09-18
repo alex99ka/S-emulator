@@ -5,6 +5,7 @@ public interface Variable  {
     Variable myClone();
     VariableType getType();
     String getRepresentation();
+    Integer getIndex();
 
 
     Variable RESULT = new VariableImpl(VariableType.RESULT, 0);

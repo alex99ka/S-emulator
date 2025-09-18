@@ -28,10 +28,10 @@ public class OpIncrease extends AbstractOpBasic {
     @Override
     public Label execute(SProgram program) {
 
-        Long variableValue = program.getVariableValue(getVariable());
+        Integer variableValue = program.getVariableValue(getVariable());
         variableValue++;
         ArrayList<Variable> vars = new ArrayList<>();
-        ArrayList<Long> vals = new ArrayList<>();
+        ArrayList<Integer> vals = new ArrayList<>();
         vars.add(getVariable());
         vals.add(variableValue);
 
